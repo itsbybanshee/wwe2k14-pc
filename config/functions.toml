@@ -1,0 +1,21 @@
+# Function boundaries ReXGlue's scanner misses in WWE 2K14 (default.xex 0.0.0.2).
+# Found from codegen "UnresolvedCall" errors with tools/find_functions.py.
+
+[functions]
+
+# --- Pass 1: the 4 UnresolvedCall targets of the first codegen (all frameless, no .pdata entry).
+
+# 2-instruction thunk (lwz r3,0(r3); b ...) right after an identical one; b from 0x82693634.
+0x827688B0 = { name = "wwe2k14_thunk_827688B0", size = 0x8 }
+
+# Vtable dispatch helpers: two guarded `bctr` tail calls then `li r3,0; blr`. b from 0x82EE9F24,
+# 13 data refs. Its twin follows immediately.
+0x82EE1A78 = { name = "wwe2k14_vdispatch_82EE1A78", size = 0x48 }
+0x82EE1AC0 = { name = "wwe2k14_vdispatch_82EE1AC0", size = 0x48 }
+
+# Leaf "find and remove from array" routines. The loop's found-branch goes to an out-of-line block
+# placed after the body's tail call (mr r8,r10; b back into the body), which the scanner saw as
+# separate functions sub_82F54580 / sub_82F55AC0 jumping to unowned labels 0x82F54550 / 0x82F55A94.
+# Sizes run to the next .pdata function (0x82F54588 / 0x82F55AC8) to include the block.
+0x82F54510 = { name = "wwe2k14_array_remove_82F54510", size = 0x78 }
+0x82F55A58 = { name = "wwe2k14_array_remove_82F55A58", size = 0x70 }

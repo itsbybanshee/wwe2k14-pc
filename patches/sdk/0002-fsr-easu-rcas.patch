@@ -1,0 +1,33 @@
+From d43132cfff2f9f25612b223f75cbacb7369ff4bd Mon Sep 17 00:00:00 2001
+From: Banshee
+Date: Fri, 16 Oct 2026 08:05:55 +0200
+Subject: [PATCH] UI: Enable precompiled FidelityFX FSR 1 and CAS pipeline in
+ rexui
+
+---
+ src/ui/CMakeLists.txt | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/src/ui/CMakeLists.txt b/src/ui/CMakeLists.txt
+index bae5da5..ec0ea21 100644
+--- a/src/ui/CMakeLists.txt
++++ b/src/ui/CMakeLists.txt
+@@ -101,12 +101,14 @@ target_link_libraries(rexui PUBLIC
+     imgui::imgui
+ )
+ 
++# AMD FidelityFX FSR 1 (EASU + RCAS) and CAS shaders are precompiled in bytecode/SPIR-V.
++target_compile_definitions(rexui PUBLIC REX_HAS_FIDELITYFX_SDK=1)
++
+ if(REXGLUE_FIDELITYFX_SOURCE_DIR AND EXISTS "${REXGLUE_FIDELITYFX_SOURCE_DIR}/sdk/include")
+     target_include_directories(rexui PRIVATE
+         "${REXGLUE_FIDELITYFX_SOURCE_DIR}/sdk/include"
+         "${REXGLUE_FIDELITYFX_SOURCE_DIR}/ffx-api/include"
+     )
+-    target_compile_definitions(rexui PRIVATE REX_HAS_FIDELITYFX_SDK=1)
+ endif()
+ 
+ set(REXUI_HAS_FIDELITYFX_RUNTIME OFF)
+-- 
+2.56.0.windows.2
+

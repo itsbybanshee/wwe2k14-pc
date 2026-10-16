@@ -1,0 +1,88 @@
+# Virtual-call thunks (lwz rA,0(r3); lwz rB,N(rA); mtctr rB; bctr), reached only through pointer
+# tables built at run time (crash: indirect call to 0x823F16E0 from 0x823F2B84). Found by scanning the
+# image for the 4-instruction pattern after a terminator; the ones inside larger functions are left out.
+
+[functions]
+0x8232E7DC = { size = 0x10 }
+# 0x823BE710 = { size = 0x10 }  # dispatch block inside its function (reached by in-function branches), not a function
+# 0x823BE720 = { size = 0x10 }  # dispatch block inside its function (reached by in-function branches), not a function
+# 0x823BE730 = { size = 0x10 }  # dispatch block inside its function (reached by in-function branches), not a function
+# 0x823BE740 = { size = 0x10 }  # dispatch block inside its function (reached by in-function branches), not a function
+# 0x823BE750 = { size = 0x10 }  # dispatch block inside its function (reached by in-function branches), not a function
+0x823F1220 = { size = 0x10 }
+0x823F1390 = { size = 0x10 }
+0x823F1570 = { size = 0x10 }
+0x823F16E0 = { size = 0x10 }
+# 0x8271D1B0 = { size = 0x10 }  # switch case block inside its function (tools/check_labels.py), not a function
+# 0x8271D1C0 = { size = 0x10 }  # switch case block inside its function (tools/check_labels.py), not a function
+# 0x8271D1D0 = { size = 0x10 }  # switch case block inside its function (tools/check_labels.py), not a function
+# 0x8271D1E0 = { size = 0x10 }  # switch case block inside its function (tools/check_labels.py), not a function
+# 0x8271D1F0 = { size = 0x10 }  # switch case block inside its function (tools/check_labels.py), not a function
+0x8271D200 = { size = 0x10 }
+0x82852A9C = { size = 0x10 }
+0x82852AB8 = { size = 0x10 }
+0x82865DB8 = { size = 0x10 }
+0x82865DF0 = { size = 0x10 }
+0x828A1704 = { size = 0x10 }
+0x828A2B58 = { size = 0x10 }
+0x828A2BF4 = { size = 0x10 }
+0x828AE8B4 = { size = 0x10 }
+0x828B0790 = { size = 0x10 }
+0x8291BDA4 = { size = 0x10 }
+0x8291BDB4 = { size = 0x10 }
+0x8291BDC4 = { size = 0x10 }
+0x8291BDE0 = { size = 0x10 }
+0x8291BDF0 = { size = 0x10 }
+0x8291BE00 = { size = 0x10 }
+# 0x82937D20 = { size = 0x10 }  # switch case block inside its function (tools/check_labels.py), not a function
+0x8294AAE8 = { size = 0x10 }
+0x8294AAF8 = { size = 0x10 }
+0x8294AB08 = { size = 0x10 }
+0x8294AB18 = { size = 0x10 }
+0x8294AB74 = { size = 0x10 }
+0x8294AB84 = { size = 0x10 }
+0x8294AB94 = { size = 0x10 }
+0x8294ABA4 = { size = 0x10 }
+0x8294ABB4 = { size = 0x10 }
+0x8294ABC4 = { size = 0x10 }
+0x8294ABD4 = { size = 0x10 }
+0x8294ABE4 = { size = 0x10 }
+0x829B4768 = { size = 0x10 }
+0x829B4778 = { size = 0x10 }
+0x829B4788 = { size = 0x10 }
+0x829B4798 = { size = 0x10 }
+0x829B47A8 = { size = 0x10 }
+0x829B47B8 = { size = 0x10 }
+0x829B47C8 = { size = 0x10 }
+0x829B47D8 = { size = 0x10 }
+0x829B47E8 = { size = 0x10 }
+0x829B47F8 = { size = 0x10 }
+0x829B4808 = { size = 0x10 }
+0x829B4818 = { size = 0x10 }
+0x829B4828 = { size = 0x10 }
+0x829B4838 = { size = 0x10 }
+0x829B4848 = { size = 0x10 }
+0x829B4858 = { size = 0x10 }
+0x829B4868 = { size = 0x10 }
+0x82A1A99C = { size = 0x10 }
+0x82A1A9C4 = { size = 0x10 }
+0x82AFB178 = { size = 0x10 }
+0x82B04B90 = { size = 0x10 }
+0x82B04F98 = { size = 0x10 }
+0x82B04FB8 = { size = 0x10 }
+0x82B05008 = { size = 0x10 }
+0x82B05028 = { size = 0x10 }
+0x82B05048 = { size = 0x10 }
+# 0x82BC98DC = { size = 0x10 }  # dispatch block inside its function (reached by in-function branches), not a function
+# 0x82BC98EC = { size = 0x10 }  # dispatch block inside its function (reached by in-function branches), not a function
+# 0x82BC98FC = { size = 0x10 }  # dispatch block inside its function (reached by in-function branches), not a function
+# 0x82BC990C = { size = 0x10 }  # dispatch block inside its function (reached by in-function branches), not a function
+# 0x82BC991C = { size = 0x10 }  # dispatch block inside its function (reached by in-function branches), not a function
+# 0x82BC992C = { size = 0x10 }  # dispatch block inside its function (reached by in-function branches), not a function
+# 0x82BC993C = { size = 0x10 }  # dispatch block inside its function (reached by in-function branches), not a function
+# 0x82BC994C = { size = 0x10 }  # dispatch block inside its function (reached by in-function branches), not a function
+0x83340AFC = { size = 0x10 }
+0x83341F08 = { size = 0x10 }
+# 0x8340B6F8 = { size = 0x10 }  # switch case block inside its function (tools/check_labels.py), not a function
+# 0x8340B708 = { size = 0x10 }  # switch case block inside its function (tools/check_labels.py), not a function
+# 0x8340B718 = { size = 0x10 }  # switch case block inside its function (tools/check_labels.py), not a function

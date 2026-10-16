@@ -1,0 +1,3 @@
+// Windows resources for wwe2k14.exe. The window code loads the icon named MAINICON for the game window;
+// Explorer and the taskbar use the first icon in the exe, which is this one too.
+MAINICON ICON "wwe2k14.ico"
