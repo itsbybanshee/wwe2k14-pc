@@ -1,0 +1,27 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": { "major": 3, "minor": 25, "patch": 0 },
+  "configurePresets": [
+    {
+      "name": "win-amd64",
+      "generator": "Ninja Multi-Config",
+      "binaryDir": "${sourceDir}/out/build/win-amd64",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++",
+        "CMAKE_RC_COMPILER": "llvm-rc",
+        "CMAKE_C_FLAGS": "-march=x86-64-v3",
+        "CMAKE_CXX_FLAGS": "-march=x86-64-v3",
+        "CMAKE_CXX_STANDARD": "23",
+        "CMAKE_CONFIGURATION_TYPES": "Debug;RelWithDebInfo;Release",
+        "CMAKE_PREFIX_PATH": "${sourceDir}/sdk/rexglue/out/install/win-amd64"
+      },
+      "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Windows" }
+    }
+  ],
+  "buildPresets": [
+    { "name": "debug", "configurePreset": "win-amd64", "configuration": "Debug" },
+    { "name": "relwithdebinfo", "configurePreset": "win-amd64", "configuration": "RelWithDebInfo" },
+    { "name": "release", "configurePreset": "win-amd64", "configuration": "Release" }
+  ]
+}

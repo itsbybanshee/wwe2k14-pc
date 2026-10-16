@@ -1,0 +1,31 @@
+# Retail game files and anything derived from them stay local.
+/game/
+/generated/
+/generated_tu/
+/game_tu/
+/work/
+/out/
+/logs/
+*.xex
+*.xexp
+*.iso
+*.bin
+
+# SDK checkout and reference repositories are fetched by tools/setup.ps1.
+/sdk/
+/ref/
+
+# Launcher build output
+launcher/bin/
+launcher/obj/
+
+# Saves, caches, installed DLC, achievements: per-user data, never committed.
+/userdata/
+
+# Published launcher copy
+/dist/
+
+__pycache__/
+
+# Mods installed through the launcher
+/mods/

@@ -1,0 +1,14 @@
+project_name = "wwe2k14"
+file_path = "game_tu/default.xex"
+out_directory_path = "generated_tu"
+
+# WWE 2K14 with title update 2 (tu00000002): game_tu\ holds your default.xex plus default.xexp from the update
+# package; the runtime applies the patch while loading, so the codegen sees the updated code.
+# tools\build-tu.ps1 sets this up. Function lists are the vanilla ones (config\) moved to their addresses in the
+# updated code by tools\port_functions.py.
+
+# setjmp / longjmp (vanilla 0x83438D70 / 0x83438A50, see wwe2k14_config.toml).
+setjmp_address = 0x8343C4D0
+longjmp_address = 0x8343C1B0
+
+includes = ["config_tu/functions.toml", "config_tu/functions_fptrs.toml", "config_tu/functions_thunks.toml", "config_tu/hooks.toml", "config_tu/functions_tu.toml"]

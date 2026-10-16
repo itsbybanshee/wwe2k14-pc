@@ -1,0 +1,88 @@
+# Virtual-call thunks (lwz rA,0(r3); lwz rB,N(rA); mtctr rB; bctr), reached only through pointer
+# tables built at run time (crash: indirect call to 0x823F16E0 from 0x823F2B84). Found by scanning the
+# image for the 4-instruction pattern after a terminator; the ones inside larger functions are left out.
+
+[functions]
+0x8232FA2C = { size = 0x10 }  # vanilla 0x8232E7DC
+# 0x823BE710 = { size = 0x10 }  # dispatch block inside its function (reached by in-function branches), not a function
+# 0x823BE720 = { size = 0x10 }  # dispatch block inside its function (reached by in-function branches), not a function
+# 0x823BE730 = { size = 0x10 }  # dispatch block inside its function (reached by in-function branches), not a function
+# 0x823BE740 = { size = 0x10 }  # dispatch block inside its function (reached by in-function branches), not a function
+# 0x823BE750 = { size = 0x10 }  # dispatch block inside its function (reached by in-function branches), not a function
+0x823F2698 = { size = 0x10 }  # vanilla 0x823F1220
+0x823F2808 = { size = 0x10 }  # vanilla 0x823F1390
+0x823F29E8 = { size = 0x10 }  # vanilla 0x823F1570
+0x823F2B58 = { size = 0x10 }  # vanilla 0x823F16E0
+# 0x8271D1B0 = { size = 0x10 }  # switch case block inside its function (tools/check_labels.py), not a function
+# 0x8271D1C0 = { size = 0x10 }  # switch case block inside its function (tools/check_labels.py), not a function
+# 0x8271D1D0 = { size = 0x10 }  # switch case block inside its function (tools/check_labels.py), not a function
+# 0x8271D1E0 = { size = 0x10 }  # switch case block inside its function (tools/check_labels.py), not a function
+# 0x8271D1F0 = { size = 0x10 }  # switch case block inside its function (tools/check_labels.py), not a function
+0x8271EBA0 = { size = 0x10 }  # vanilla 0x8271D200
+0x828551D4 = { size = 0x10 }  # vanilla 0x82852A9C
+0x828551F0 = { size = 0x10 }  # vanilla 0x82852AB8
+0x828684E8 = { size = 0x10 }  # vanilla 0x82865DB8
+0x82868520 = { size = 0x10 }  # vanilla 0x82865DF0
+0x828A3FDC = { size = 0x10 }  # vanilla 0x828A1704
+0x828A5430 = { size = 0x10 }  # vanilla 0x828A2B58
+0x828A54CC = { size = 0x10 }  # vanilla 0x828A2BF4
+0x828B1174 = { size = 0x10 }  # vanilla 0x828AE8B4
+0x828B3078 = { size = 0x10 }  # vanilla 0x828B0790
+0x8291E76C = { size = 0x10 }  # vanilla 0x8291BDA4
+0x8291E77C = { size = 0x10 }  # vanilla 0x8291BDB4
+0x8291E78C = { size = 0x10 }  # vanilla 0x8291BDC4
+0x8291E7A8 = { size = 0x10 }  # vanilla 0x8291BDE0
+0x8291E7B8 = { size = 0x10 }  # vanilla 0x8291BDF0
+0x8291E7C8 = { size = 0x10 }  # vanilla 0x8291BE00
+# 0x82937D20 = { size = 0x10 }  # switch case block inside its function (tools/check_labels.py), not a function
+0x8294D738 = { size = 0x10 }  # vanilla 0x8294AAE8
+0x8294D748 = { size = 0x10 }  # vanilla 0x8294AAF8
+0x8294D758 = { size = 0x10 }  # vanilla 0x8294AB08
+0x8294D768 = { size = 0x10 }  # vanilla 0x8294AB18
+0x8294D7C4 = { size = 0x10 }  # vanilla 0x8294AB74
+0x8294D7D4 = { size = 0x10 }  # vanilla 0x8294AB84
+0x8294D7E4 = { size = 0x10 }  # vanilla 0x8294AB94
+0x8294D7F4 = { size = 0x10 }  # vanilla 0x8294ABA4
+0x8294D804 = { size = 0x10 }  # vanilla 0x8294ABB4
+0x8294D814 = { size = 0x10 }  # vanilla 0x8294ABC4
+0x8294D824 = { size = 0x10 }  # vanilla 0x8294ABD4
+0x8294D834 = { size = 0x10 }  # vanilla 0x8294ABE4
+0x829B73D8 = { size = 0x10 }  # vanilla 0x829B4768
+0x829B73E8 = { size = 0x10 }  # vanilla 0x829B4778
+0x829B73F8 = { size = 0x10 }  # vanilla 0x829B4788
+0x829B7408 = { size = 0x10 }  # vanilla 0x829B4798
+0x829B7418 = { size = 0x10 }  # vanilla 0x829B47A8
+0x829B7428 = { size = 0x10 }  # vanilla 0x829B47B8
+0x829B7438 = { size = 0x10 }  # vanilla 0x829B47C8
+0x829B7448 = { size = 0x10 }  # vanilla 0x829B47D8
+0x829B7458 = { size = 0x10 }  # vanilla 0x829B47E8
+0x829B7468 = { size = 0x10 }  # vanilla 0x829B47F8
+0x829B7478 = { size = 0x10 }  # vanilla 0x829B4808
+0x829B7488 = { size = 0x10 }  # vanilla 0x829B4818
+0x829B7498 = { size = 0x10 }  # vanilla 0x829B4828
+0x829B74A8 = { size = 0x10 }  # vanilla 0x829B4838
+0x829B74B8 = { size = 0x10 }  # vanilla 0x829B4848
+0x829B74C8 = { size = 0x10 }  # vanilla 0x829B4858
+0x829B74D8 = { size = 0x10 }  # vanilla 0x829B4868
+0x82A1DCC4 = { size = 0x10 }  # vanilla 0x82A1A99C
+0x82A1DCEC = { size = 0x10 }  # vanilla 0x82A1A9C4
+0x82AFE808 = { size = 0x10 }  # vanilla 0x82AFB178
+0x82B08210 = { size = 0x10 }  # vanilla 0x82B04B90
+0x82B08618 = { size = 0x10 }  # vanilla 0x82B04F98
+0x82B08638 = { size = 0x10 }  # vanilla 0x82B04FB8
+0x82B08688 = { size = 0x10 }  # vanilla 0x82B05008
+0x82B086A8 = { size = 0x10 }  # vanilla 0x82B05028
+0x82B086C8 = { size = 0x10 }  # vanilla 0x82B05048
+# 0x82BC98DC = { size = 0x10 }  # dispatch block inside its function (reached by in-function branches), not a function
+# 0x82BC98EC = { size = 0x10 }  # dispatch block inside its function (reached by in-function branches), not a function
+# 0x82BC98FC = { size = 0x10 }  # dispatch block inside its function (reached by in-function branches), not a function
+# 0x82BC990C = { size = 0x10 }  # dispatch block inside its function (reached by in-function branches), not a function
+# 0x82BC991C = { size = 0x10 }  # dispatch block inside its function (reached by in-function branches), not a function
+# 0x82BC992C = { size = 0x10 }  # dispatch block inside its function (reached by in-function branches), not a function
+# 0x82BC993C = { size = 0x10 }  # dispatch block inside its function (reached by in-function branches), not a function
+# 0x82BC994C = { size = 0x10 }  # dispatch block inside its function (reached by in-function branches), not a function
+0x833443FC = { size = 0x10 }  # vanilla 0x83340AFC
+0x83345808 = { size = 0x10 }  # vanilla 0x83341F08
+# 0x8340B6F8 = { size = 0x10 }  # switch case block inside its function (tools/check_labels.py), not a function
+# 0x8340B708 = { size = 0x10 }  # switch case block inside its function (tools/check_labels.py), not a function
+# 0x8340B718 = { size = 0x10 }  # switch case block inside its function (tools/check_labels.py), not a function

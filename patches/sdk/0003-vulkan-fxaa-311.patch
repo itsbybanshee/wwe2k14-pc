@@ -1,0 +1,325 @@
+From 3f28b672a93acf61f38609709a9c32589dffacc0 Mon Sep 17 00:00:00 2001
+From: Banshee
+Date: Fri, 16 Oct 2026 08:57:04 +0200
+Subject: [PATCH] graphics/vulkan: Upgrade FXAA to NVIDIA FXAA 3.11 Quality
+ algorithm
+
+---
+ src/graphics/vulkan/command_processor.cpp | 264 +++++++++++++++-------
+ 1 file changed, 188 insertions(+), 76 deletions(-)
+
+diff --git a/src/graphics/vulkan/command_processor.cpp b/src/graphics/vulkan/command_processor.cpp
+index a92a5b3..e3d167d 100644
+--- a/src/graphics/vulkan/command_processor.cpp
++++ b/src/graphics/vulkan/command_processor.cpp
+@@ -541,16 +541,9 @@ layout(push_constant) uniform XeApplyGammaRampConstants {
+ layout(set = 0, binding = 0) uniform sampler2D xe_fxaa_source;
+ layout(set = 1, binding = 0, rgb10_a2) writeonly uniform image2D xe_fxaa_dest;
+ 
+-const vec3 kLumaWeights = vec3(0.299, 0.587, 0.114);
+ const float kEdgeThreshold = 0.063;
+ const float kEdgeThresholdMin = 0.0312;
+-const float kSpanMax = 12.0;
+-const float kDirReduceMul = 0.125;
+-const float kDirReduceMin = 1.0 / 128.0;
+-
+-float SampleLuma(vec2 uv) {
+-  return textureLod(xe_fxaa_source, uv, 0.0).a;
+-}
++const float kSubpixQuality = 0.75;
+ 
+ void main() {
+   uvec2 pixel = gl_GlobalInvocationID.xy;
+@@ -561,42 +554,105 @@ void main() {
+   vec2 uv = (vec2(pixel) + vec2(0.5)) * xe_fxaa_size_inv;
+   vec2 texel = xe_fxaa_size_inv;
+   vec4 rgbm = textureLod(xe_fxaa_source, uv, 0.0);
+-
+   float lumaM = rgbm.a;
+-  float lumaNW = SampleLuma(uv + vec2(-texel.x, -texel.y));
+-  float lumaNE = SampleLuma(uv + vec2( texel.x, -texel.y));
+-  float lumaSW = SampleLuma(uv + vec2(-texel.x,  texel.y));
+-  float lumaSE = SampleLuma(uv + vec2( texel.x,  texel.y));
+ 
+-  float lumaMin = min(lumaM, min(min(lumaNW, lumaNE), min(lumaSW, lumaSE)));
+-  float lumaMax = max(lumaM, max(max(lumaNW, lumaNE), max(lumaSW, lumaSE)));
++  float lumaN = textureLod(xe_fxaa_source, uv + vec2(0.0, -texel.y), 0.0).a;
++  float lumaS = textureLod(xe_fxaa_source, uv + vec2(0.0,  texel.y), 0.0).a;
++  float lumaW = textureLod(xe_fxaa_source, uv + vec2(-texel.x, 0.0), 0.0).a;
++  float lumaE = textureLod(xe_fxaa_source, uv + vec2( texel.x, 0.0), 0.0).a;
++
++  float lumaMin = min(lumaM, min(min(lumaN, lumaW), min(lumaS, lumaE)));
++  float lumaMax = max(lumaM, max(max(lumaN, lumaW), max(lumaS, lumaE)));
+   float lumaRange = lumaMax - lumaMin;
+ 
+-  vec3 result = rgbm.rgb;
+-  if (lumaRange >= max(kEdgeThresholdMin, lumaMax * kEdgeThreshold)) {
+-    vec2 dir;
+-    dir.x = -((lumaNW + lumaNE) - (lumaSW + lumaSE));
+-    dir.y =  ((lumaNW + lumaSW) - (lumaNE + lumaSE));
+-
+-    float dirReduce = max(
+-        (lumaNW + lumaNE + lumaSW + lumaSE) * (0.25 * kDirReduceMul),
+-        kDirReduceMin);
+-    float rcpDirMin = 1.0 / (min(abs(dir.x), abs(dir.y)) + dirReduce);
+-    dir = clamp(dir * rcpDirMin, vec2(-kSpanMax), vec2(kSpanMax)) * texel;
+-
+-    vec3 rgbA =
+-        0.5 *
+-        (textureLod(xe_fxaa_source, uv + dir * (1.0 / 3.0 - 0.5), 0.0).rgb +
+-         textureLod(xe_fxaa_source, uv + dir * (2.0 / 3.0 - 0.5), 0.0).rgb);
+-    vec3 rgbB =
+-        rgbA * 0.5 +
+-        0.25 *
+-            (textureLod(xe_fxaa_source, uv + dir * -0.5, 0.0).rgb +
+-             textureLod(xe_fxaa_source, uv + dir * 0.5, 0.0).rgb);
+-    float lumaB = dot(rgbB, kLumaWeights);
+-    result = (lumaB < lumaMin || lumaB > lumaMax) ? rgbA : rgbB;
++  if (lumaRange < max(kEdgeThresholdMin, lumaMax * kEdgeThreshold)) {
++    imageStore(xe_fxaa_dest, ivec2(pixel), vec4(rgbm.rgb, 1.0));
++    return;
++  }
++
++  float lumaNW = textureLod(xe_fxaa_source, uv + vec2(-texel.x, -texel.y), 0.0).a;
++  float lumaNE = textureLod(xe_fxaa_source, uv + vec2( texel.x, -texel.y), 0.0).a;
++  float lumaSW = textureLod(xe_fxaa_source, uv + vec2(-texel.x,  texel.y), 0.0).a;
++  float lumaSE = textureLod(xe_fxaa_source, uv + vec2( texel.x,  texel.y), 0.0).a;
++
++  float lumaL = (lumaN + lumaS + lumaE + lumaW) * 2.0 + (lumaNW + lumaNE + lumaSW + lumaSE);
++  float subpix = abs(lumaL * (1.0 / 12.0) - lumaM);
++  float subpixFilter = clamp(subpix / lumaRange, 0.0, 1.0);
++  float subpixBlend = (-2.0 * subpixFilter + 3.0) * subpixFilter * subpixFilter;
++  float subpixOffset = clamp(subpixBlend * subpixBlend * kSubpixQuality, 0.0, 0.5);
++
++  float edgeHorz = abs(-2.0 * lumaM + lumaN + lumaS) * 2.0 +
++                   abs(-2.0 * lumaW + lumaNW + lumaSW) +
++                   abs(-2.0 * lumaE + lumaNE + lumaSE);
++  float edgeVert = abs(-2.0 * lumaM + lumaW + lumaE) * 2.0 +
++                   abs(-2.0 * lumaN + lumaNW + lumaNE) +
++                   abs(-2.0 * lumaS + lumaSW + lumaSE);
++  bool isHorz = (edgeHorz >= edgeVert);
++
++  float lumaNeg = isHorz ? lumaN : lumaW;
++  float lumaPos = isHorz ? lumaS : lumaE;
++  float gradientNeg = abs(lumaNeg - lumaM);
++  float gradientPos = abs(lumaPos - lumaM);
++
++  bool isNegSteeper = (gradientNeg >= gradientPos);
++  float gradientScaled = 0.25 * max(gradientNeg, gradientPos);
++
++  vec2 stepDir = isHorz ? vec2(texel.x, 0.0) : vec2(0.0, texel.y);
++  vec2 edgePos = uv;
++  if (isHorz) {
++    edgePos.y += (isNegSteeper ? -0.5 : 0.5) * texel.y;
++  } else {
++    edgePos.x += (isNegSteeper ? -0.5 : 0.5) * texel.x;
++  }
++
++  float lumaTarget = 0.5 * (lumaM + (isNegSteeper ? lumaNeg : lumaPos));
++
++  vec2 posNeg = edgePos - stepDir;
++  vec2 posPos = edgePos + stepDir;
++
++  float lumaEndNeg = textureLod(xe_fxaa_source, posNeg, 0.0).a - lumaTarget;
++  float lumaEndPos = textureLod(xe_fxaa_source, posPos, 0.0).a - lumaTarget;
++
++  bool doneNeg = abs(lumaEndNeg) >= gradientScaled;
++  bool donePos = abs(lumaEndPos) >= gradientScaled;
++
++  const float kSteps[10] = float[10](1.5, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 4.0, 8.0);
++  for (int i = 0; i < 10; ++i) {
++    if (!doneNeg) {
++      posNeg -= stepDir * kSteps[i];
++      lumaEndNeg = textureLod(xe_fxaa_source, posNeg, 0.0).a - lumaTarget;
++      doneNeg = abs(lumaEndNeg) >= gradientScaled;
++    }
++    if (!donePos) {
++      posPos += stepDir * kSteps[i];
++      lumaEndPos = textureLod(xe_fxaa_source, posPos, 0.0).a - lumaTarget;
++      donePos = abs(lumaEndPos) >= gradientScaled;
++    }
++    if (doneNeg && donePos) break;
++  }
++
++  float dstNeg = isHorz ? (uv.x - posNeg.x) : (uv.y - posNeg.y);
++  float dstPos = isHorz ? (posPos.x - uv.x) : (posPos.y - uv.y);
++
++  bool isCloserToNeg = (dstNeg < dstPos);
++  float dstMin = min(dstNeg, dstPos);
++  float spanLength = dstNeg + dstPos;
++  float pixelOffset = clamp(0.5 - (dstMin / spanLength), 0.0, 0.5);
++
++  bool lumaEndCloser = isCloserToNeg ? lumaEndNeg : lumaEndPos;
++  bool isGoodSpan = (lumaEndCloser < 0.0) == (lumaM < lumaTarget);
++  float edgeOffset = isGoodSpan ? 0.0 : pixelOffset;
++
++  float finalOffset = max(edgeOffset, subpixOffset);
++
++  vec2 finalUv = uv;
++  if (isHorz) {
++    finalUv.y += (isNegSteeper ? -finalOffset : finalOffset) * texel.y;
++  } else {
++    finalUv.x += (isNegSteeper ? -finalOffset : finalOffset) * texel.x;
+   }
+ 
++  vec3 result = textureLod(xe_fxaa_source, finalUv, 0.0).rgb;
+   imageStore(xe_fxaa_dest, ivec2(pixel), vec4(result, 1.0));
+ }
+ )"
+@@ -611,16 +667,9 @@ layout(push_constant) uniform XeApplyGammaRampConstants {
+ layout(set = 0, binding = 0) uniform sampler2D xe_fxaa_source;
+ layout(set = 1, binding = 0, rgb10_a2) writeonly uniform image2D xe_fxaa_dest;
+ 
+-const vec3 kLumaWeights = vec3(0.299, 0.587, 0.114);
+ const float kEdgeThreshold = 0.166;
+ const float kEdgeThresholdMin = 0.0833;
+-const float kSpanMax = 8.0;
+-const float kDirReduceMul = 0.125;
+-const float kDirReduceMin = 1.0 / 128.0;
+-
+-float SampleLuma(vec2 uv) {
+-  return textureLod(xe_fxaa_source, uv, 0.0).a;
+-}
++const float kSubpixQuality = 0.75;
+ 
+ void main() {
+   uvec2 pixel = gl_GlobalInvocationID.xy;
+@@ -631,42 +680,105 @@ void main() {
+   vec2 uv = (vec2(pixel) + vec2(0.5)) * xe_fxaa_size_inv;
+   vec2 texel = xe_fxaa_size_inv;
+   vec4 rgbm = textureLod(xe_fxaa_source, uv, 0.0);
+-
+   float lumaM = rgbm.a;
+-  float lumaNW = SampleLuma(uv + vec2(-texel.x, -texel.y));
+-  float lumaNE = SampleLuma(uv + vec2( texel.x, -texel.y));
+-  float lumaSW = SampleLuma(uv + vec2(-texel.x,  texel.y));
+-  float lumaSE = SampleLuma(uv + vec2( texel.x,  texel.y));
+ 
+-  float lumaMin = min(lumaM, min(min(lumaNW, lumaNE), min(lumaSW, lumaSE)));
+-  float lumaMax = max(lumaM, max(max(lumaNW, lumaNE), max(lumaSW, lumaSE)));
++  float lumaN = textureLod(xe_fxaa_source, uv + vec2(0.0, -texel.y), 0.0).a;
++  float lumaS = textureLod(xe_fxaa_source, uv + vec2(0.0,  texel.y), 0.0).a;
++  float lumaW = textureLod(xe_fxaa_source, uv + vec2(-texel.x, 0.0), 0.0).a;
++  float lumaE = textureLod(xe_fxaa_source, uv + vec2( texel.x, 0.0), 0.0).a;
++
++  float lumaMin = min(lumaM, min(min(lumaN, lumaW), min(lumaS, lumaE)));
++  float lumaMax = max(lumaM, max(max(lumaN, lumaW), max(lumaS, lumaE)));
+   float lumaRange = lumaMax - lumaMin;
+ 
+-  vec3 result = rgbm.rgb;
+-  if (lumaRange >= max(kEdgeThresholdMin, lumaMax * kEdgeThreshold)) {
+-    vec2 dir;
+-    dir.x = -((lumaNW + lumaNE) - (lumaSW + lumaSE));
+-    dir.y =  ((lumaNW + lumaSW) - (lumaNE + lumaSE));
+-
+-    float dirReduce = max(
+-        (lumaNW + lumaNE + lumaSW + lumaSE) * (0.25 * kDirReduceMul),
+-        kDirReduceMin);
+-    float rcpDirMin = 1.0 / (min(abs(dir.x), abs(dir.y)) + dirReduce);
+-    dir = clamp(dir * rcpDirMin, vec2(-kSpanMax), vec2(kSpanMax)) * texel;
+-
+-    vec3 rgbA =
+-        0.5 *
+-        (textureLod(xe_fxaa_source, uv + dir * (1.0 / 3.0 - 0.5), 0.0).rgb +
+-         textureLod(xe_fxaa_source, uv + dir * (2.0 / 3.0 - 0.5), 0.0).rgb);
+-    vec3 rgbB =
+-        rgbA * 0.5 +
+-        0.25 *
+-            (textureLod(xe_fxaa_source, uv + dir * -0.5, 0.0).rgb +
+-             textureLod(xe_fxaa_source, uv + dir * 0.5, 0.0).rgb);
+-    float lumaB = dot(rgbB, kLumaWeights);
+-    result = (lumaB < lumaMin || lumaB > lumaMax) ? rgbA : rgbB;
++  if (lumaRange < max(kEdgeThresholdMin, lumaMax * kEdgeThreshold)) {
++    imageStore(xe_fxaa_dest, ivec2(pixel), vec4(rgbm.rgb, 1.0));
++    return;
++  }
++
++  float lumaNW = textureLod(xe_fxaa_source, uv + vec2(-texel.x, -texel.y), 0.0).a;
++  float lumaNE = textureLod(xe_fxaa_source, uv + vec2( texel.x, -texel.y), 0.0).a;
++  float lumaSW = textureLod(xe_fxaa_source, uv + vec2(-texel.x,  texel.y), 0.0).a;
++  float lumaSE = textureLod(xe_fxaa_source, uv + vec2( texel.x,  texel.y), 0.0).a;
++
++  float lumaL = (lumaN + lumaS + lumaE + lumaW) * 2.0 + (lumaNW + lumaNE + lumaSW + lumaSE);
++  float subpix = abs(lumaL * (1.0 / 12.0) - lumaM);
++  float subpixFilter = clamp(subpix / lumaRange, 0.0, 1.0);
++  float subpixBlend = (-2.0 * subpixFilter + 3.0) * subpixFilter * subpixFilter;
++  float subpixOffset = clamp(subpixBlend * subpixBlend * kSubpixQuality, 0.0, 0.5);
++
++  float edgeHorz = abs(-2.0 * lumaM + lumaN + lumaS) * 2.0 +
++                   abs(-2.0 * lumaW + lumaNW + lumaSW) +
++                   abs(-2.0 * lumaE + lumaNE + lumaSE);
++  float edgeVert = abs(-2.0 * lumaM + lumaW + lumaE) * 2.0 +
++                   abs(-2.0 * lumaN + lumaNW + lumaNE) +
++                   abs(-2.0 * lumaS + lumaSW + lumaSE);
++  bool isHorz = (edgeHorz >= edgeVert);
++
++  float lumaNeg = isHorz ? lumaN : lumaW;
++  float lumaPos = isHorz ? lumaS : lumaE;
++  float gradientNeg = abs(lumaNeg - lumaM);
++  float gradientPos = abs(lumaPos - lumaM);
++
++  bool isNegSteeper = (gradientNeg >= gradientPos);
++  float gradientScaled = 0.25 * max(gradientNeg, gradientPos);
++
++  vec2 stepDir = isHorz ? vec2(texel.x, 0.0) : vec2(0.0, texel.y);
++  vec2 edgePos = uv;
++  if (isHorz) {
++    edgePos.y += (isNegSteeper ? -0.5 : 0.5) * texel.y;
++  } else {
++    edgePos.x += (isNegSteeper ? -0.5 : 0.5) * texel.x;
++  }
++
++  float lumaTarget = 0.5 * (lumaM + (isNegSteeper ? lumaNeg : lumaPos));
++
++  vec2 posNeg = edgePos - stepDir;
++  vec2 posPos = edgePos + stepDir;
++
++  float lumaEndNeg = textureLod(xe_fxaa_source, posNeg, 0.0).a - lumaTarget;
++  float lumaEndPos = textureLod(xe_fxaa_source, posPos, 0.0).a - lumaTarget;
++
++  bool doneNeg = abs(lumaEndNeg) >= gradientScaled;
++  bool donePos = abs(lumaEndPos) >= gradientScaled;
++
++  const float kSteps[6] = float[6](1.5, 2.0, 2.0, 2.0, 2.0, 4.0);
++  for (int i = 0; i < 6; ++i) {
++    if (!doneNeg) {
++      posNeg -= stepDir * kSteps[i];
++      lumaEndNeg = textureLod(xe_fxaa_source, posNeg, 0.0).a - lumaTarget;
++      doneNeg = abs(lumaEndNeg) >= gradientScaled;
++    }
++    if (!donePos) {
++      posPos += stepDir * kSteps[i];
++      lumaEndPos = textureLod(xe_fxaa_source, posPos, 0.0).a - lumaTarget;
++      donePos = abs(lumaEndPos) >= gradientScaled;
++    }
++    if (doneNeg && donePos) break;
++  }
++
++  float dstNeg = isHorz ? (uv.x - posNeg.x) : (uv.y - posNeg.y);
++  float dstPos = isHorz ? (posPos.x - uv.x) : (posPos.y - uv.y);
++
++  bool isCloserToNeg = (dstNeg < dstPos);
++  float dstMin = min(dstNeg, dstPos);
++  float spanLength = dstNeg + dstPos;
++  float pixelOffset = clamp(0.5 - (dstMin / spanLength), 0.0, 0.5);
++
++  bool lumaEndCloser = isCloserToNeg ? lumaEndNeg : lumaEndPos;
++  bool isGoodSpan = (lumaEndCloser < 0.0) == (lumaM < lumaTarget);
++  float edgeOffset = isGoodSpan ? 0.0 : pixelOffset;
++
++  float finalOffset = max(edgeOffset, subpixOffset);
++
++  vec2 finalUv = uv;
++  if (isHorz) {
++    finalUv.y += (isNegSteeper ? -finalOffset : finalOffset) * texel.y;
++  } else {
++    finalUv.x += (isNegSteeper ? -finalOffset : finalOffset) * texel.x;
+   }
+ 
++  vec3 result = textureLod(xe_fxaa_source, finalUv, 0.0).rgb;
+   imageStore(xe_fxaa_dest, ivec2(pixel), vec4(result, 1.0));
+ }
+ )";
+-- 
+2.56.0.windows.2
+
