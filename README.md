@@ -1,7 +1,6 @@
 # WWE 2K14 PC (Beta) [By Banshee]
 
-WWE 2K14 running natively on Windows. It's not an emulator: the Xbox 360 game is rebuilt to run on PC (static
-recompilation), with a launcher that adds modern graphics options, mods, custom logos, your own music and more.
+WWE 2K14 PC recompilation with a launcher that adds modern graphics options, mods, custom logos, your own music and more.
 
 - No game data included. You need your own legally acquired WWE 2K14 (Xbox 360) files: a disc image (`.iso`) or the
   extracted game folder.
@@ -9,25 +8,23 @@ recompilation), with a launcher that adds modern graphics options, mods, custom 
 ## Features
 
 - **Resolution**: 720p, 1080p, 1440p or 4K
-- **AMD FidelityFX Super Resolution (FSR)** with edge-preserving sharpening (RCAS) for high framerates at high
-  resolutions
+- **AMD FidelityFX Super Resolution (FSR)**
 - **NVIDIA FXAA 3.11 Quality** anti-aliasing (FXAA / Max)
-- Smooth frame pacing, with **60 FPS entrances and victory scenes**
-- Windowed, borderless or fullscreen; anisotropic filtering (4x, 16x), shadows toggle, FPS counter
-- **Controller or keyboard**, plus the **mouse in menus**: point-and-click menus, wrestler select, clickable button
-  prompts, option sliders, Yes/No popups, wheel scrolling
+- **60 FPS entrances and victory scenes**
+- **Keyboard gameplay**
+- **Mouse support**: point-and-click menus, wrestler select, clickable button prompts
 - **Runs straight from your `.iso`**, or from an extracted game folder
-- **Mods** (wrestlers, arenas, menus, videos, sounds) with an on/off switch each, also with an `.iso`
-- **DLC**, achievements with unlock pop-ups, screenshots with F12
-- **Your own music** in the game's soundtrack (MP3, WAV, FLAC, OGG)
-- **Custom logos**, including import from a PS3 save, with a **logo library** to keep more than 20 and choose which
-  ones the game uses
+- **Mods** (wrestlers, arenas, menus, videos, sounds) with an on/off switch each
+- **Total conversion** one-click install for projects like "Wrestling Legends" 
+- **DLC support**
+- **Achievements** with unlock notifications and progress tracker
+- **Custom music** in the game's soundtrack or entrances (MP3, WAV, FLAC, OGG)
+- **Custom logos**, including import from a PS3 save, with a **logo library** to keep more than 20 and choose imports
 
 ## Installation
 
-1. Unzip the download into a folder of its own (e.g. `C:\Games\WWE 2K14 PC`). Don't run it from inside the zip, and
-   avoid `Program Files`.
-2. Run `WWE 2K14 PC.exe`. If Windows says "Windows protected your PC", click **More info** → **Run anyway**.
+1. Unzip the download into a folder of its own (e.g. `C:\Games\WWE 2K14 PC`).
+2. Run `WWE 2K14 PC.exe`.
 3. Under **Game files**, click **Choose ISO** and pick your WWE 2K14 `.iso` (or **Choose folder** for an extracted
    copy).
 4. Pick your settings and press **Play**.
@@ -35,20 +32,6 @@ recompilation), with a launcher that adds modern graphics options, mods, custom 
 **Requirements:** Windows 10/11 64-bit, a Vulkan graphics card with an up-to-date driver, controller or keyboard,
 and the [Microsoft Edge WebView2 Runtime](https://developer.microsoft.com/microsoft-edge/webview2/) (already on
 Windows 11 and most Windows 10 PCs).
-
-## The launcher
-
-| Section | What it does |
-|---|---|
-| **Game files** | Choose your `.iso` or game folder. **Install update** adds the official title update if you have its files; **Updated** then plays with it. |
-| **Resolution** | 720p is the original Xbox 360 look; 1080p and up are sharper and need a stronger graphics card. |
-| **Graphics** | V-Sync, 60 FPS cinematics, shadows, FPS counter, window mode, anisotropic filtering, anti-aliasing (FXAA / Max), upscaling (FSR). |
-| **Achievements** | Your progress. Start the game once to load the list. |
-| **DLC** | Add official DLC packages you own. |
-| **Mods** | Add a mod as a `.zip`, a folder or a single file; each has its own on/off switch. Close the game before changing mods. |
-| **Music** | Add your own songs, then choose **User playlist** in the game's soundtrack options. |
-| **Logos** | **Add logos** (PNG, JPG, BMP, GIF), **Import PS3 save** (`LOGOS.DAT` or a `.zip` / `.rar` of the save), and the **Library** to choose which 20 the game uses. Save one logo in the game's Paint Tool first. |
-| **Controls** | The full controller and keyboard layout. |
 
 Saves, settings, logos, music and DLC are kept in `userdata` next to the launcher, mods in `mods`, logs in `logs`.
 To update, unzip the new version over the old one: `userdata` and `mods` are kept.
