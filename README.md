@@ -7,10 +7,10 @@ WWE 2K14 PC recompilation with a launcher that adds modern graphics options, mod
 
 ## What's new in v1.1
 
-- 🌍 **Languages**: supported EN/FR/DE/IT/SP. Game text, achievements & launcher switch with one click.
-- 🎮 **Button mapper**: remap controller and keyboard binds. **Export / import** your control schemes to share them.
-- ⌨️ **Modern keyboard layout**: default keys in the style of current WWE 2K games on PC.
-- 🕹️ **Controls window**: an Xbox 360 controller diagram with real button icons, plus keyboard and custom pages.
+- 🌍 **Languages**: supported EN/FR/DE/IT/SP. Game text, achievements & launcher switch with one click
+- 🎮 **Button mapper**: remap controller and keyboard binds. **Export / import** your control schemes to share them
+- ⌨️ **Modern keyboard layout**: default keys in the style of current WWE 2K games on PC
+- 🕹️ **Controls window**: an Xbox 360 controller diagram with real button icons, plus keyboard and custom pages
 - ✨ **Launcher polish**: fits any screen size, cleaner and more consistent look.
 
 ## Features
@@ -75,5 +75,11 @@ Online features of the original game are not available. This is an early release
 - The libraries listed in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md); the SDK patches are under the SDK's
   licence ([patches/sdk/LICENSE](patches/sdk/LICENSE))
 - **Banshee** ([@itsbybanshee](https://x.com/itsbybanshee)): WWE 2K14 PC port and launcher
+
+## Roadmap
+
+- "Wrestling Legends" mod music fix
+- Support for more languages: Polish, Russian, Portuguese (PT/BR)
+- Save editor.
 
 Fan project, not affiliated with WWE, 2K or Yuke's.
