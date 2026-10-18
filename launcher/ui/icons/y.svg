@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20" height="20" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="c" x="-.10229" y="-.11069" width="1.2046" height="1.2214" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation=".50642"/>
+    </filter>
+  </defs>
+  <linearGradient id="a" x1="10" x2="10" y2="20" gradientUnits="userSpaceOnUse">
+    <stop stop-color="#c60" offset="0"/>
+    <stop stop-color="#CC6F09" offset=".2774"/>
+    <stop stop-color="#CC8721" offset=".7283"/>
+    <stop stop-color="#c93" offset="1"/>
+  </linearGradient>
+  <circle cx="10" cy="10" r="10" fill="url(#a)"/>
+  <linearGradient id="b" x1="10" x2="10" y1="2.001" y2="16.32" gradientUnits="userSpaceOnUse">
+    <stop stop-color="#F7F7F8" stop-opacity=".5" offset="0"/>
+    <stop stop-color="#D48800" stop-opacity="0" offset=".8"/>
+  </linearGradient>
+  <circle cx="10" cy="10.001" r="7.999" fill="url(#b)"/>
+  <linearGradient id="d" x1="4.0586" x2="15.941" y1="10" y2="10" gradientUnits="userSpaceOnUse">
+    <stop stop-color="#F5D166" offset="0"/>
+    <stop stop-color="#F4CE5D" offset=".0516"/>
+    <stop stop-color="#F2C749" offset=".2041"/>
+    <stop stop-color="#F0C23C" offset=".3547"/>
+    <stop stop-color="#F0C138" offset=".5"/>
+    <stop stop-color="#F0C23C" offset=".6397"/>
+    <stop stop-color="#F2C749" offset=".7843"/>
+    <stop stop-color="#F4CE5D" offset=".9309"/>
+    <stop stop-color="#F5D166" offset=".9805"/>
+  </linearGradient>
+  <path transform="translate(0 -.18538)" fill="#e07807" fill-opacity=".96471" filter="url(#c)" style="mix-blend-mode:normal" d="M10.119 8.617 7.598 4.51H4.059l4.509 6.84v4.14h3.022v-4.109l4.351-6.871h-3.498z"/>
+  <path fill="url(#d)" d="m12.443 4.51-2.324 4.107L7.598 4.51H4.059l4.509 6.84v4.14h3.022v-4.109l4.351-6.871z"/>
+</svg>

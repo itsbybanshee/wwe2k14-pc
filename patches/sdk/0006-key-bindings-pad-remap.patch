@@ -1,0 +1,339 @@
+From d860160d5e58a3c5adf74265d4aa7637d61db5c0 Mon Sep 17 00:00:00 2001
+From: Banshee
+Date: Sun, 18 Oct 2026 07:19:52 +0200
+Subject: [PATCH] input: comma-separated key bindings (built-in keys become
+ defaults); controller pad_remap
+
+---
+ src/input/mnk/mnk_input_driver.cpp       | 155 ++++++++++++-----------
+ src/input/xinput/xinput_input_driver.cpp |  85 +++++++++++++
+ 2 files changed, 163 insertions(+), 77 deletions(-)
+
+diff --git a/src/input/mnk/mnk_input_driver.cpp b/src/input/mnk/mnk_input_driver.cpp
+index 8572045..e79c821 100644
+--- a/src/input/mnk/mnk_input_driver.cpp
++++ b/src/input/mnk/mnk_input_driver.cpp
+@@ -35,30 +35,30 @@ REXCVAR_DEFINE_INT32(mnk_user_index, 0, "Input", "Controller slot (0-3) for MnK"
+ REXCVAR_DEFINE_DOUBLE(mnk_sensitivity, 1.0, "Input", "Mouse sensitivity for right stick")
+     .range(0.01, 10.0);
+ 
+-REXCVAR_DEFINE_STRING(keybind_a, "Space", "Input/Keybinds/Controller", "A button");
+-REXCVAR_DEFINE_STRING(keybind_b, "Backspace", "Input/Keybinds/Controller", "B button");
+-REXCVAR_DEFINE_STRING(keybind_x, "J", "Input/Keybinds/Controller", "X button");
+-REXCVAR_DEFINE_STRING(keybind_y, "I", "Input/Keybinds/Controller", "Y button");
+-REXCVAR_DEFINE_STRING(keybind_left_trigger, "Shift", "Input/Keybinds/Controller", "Left trigger");
+-REXCVAR_DEFINE_STRING(keybind_right_trigger, "F", "Input/Keybinds/Controller", "Right trigger");
+-REXCVAR_DEFINE_STRING(keybind_left_shoulder, "Q", "Input/Keybinds/Controller", "Left shoulder");
+-REXCVAR_DEFINE_STRING(keybind_right_shoulder, "E", "Input/Keybinds/Controller", "Right shoulder");
+-REXCVAR_DEFINE_STRING(keybind_lstick_up, "W", "Input/Keybinds/Controller", "Left stick up");
+-REXCVAR_DEFINE_STRING(keybind_lstick_down, "S", "Input/Keybinds/Controller", "Left stick down");
+-REXCVAR_DEFINE_STRING(keybind_lstick_left, "A", "Input/Keybinds/Controller", "Left stick left");
+-REXCVAR_DEFINE_STRING(keybind_lstick_right, "D", "Input/Keybinds/Controller", "Left stick right");
+-REXCVAR_DEFINE_STRING(keybind_lstick_press, "C", "Input/Keybinds/Controller", "Left stick press");
+-REXCVAR_DEFINE_STRING(keybind_rstick_up, "Numpad8", "Input/Keybinds/Controller", "Right stick up");
+-REXCVAR_DEFINE_STRING(keybind_rstick_down, "Numpad2", "Input/Keybinds/Controller", "Right stick down");
+-REXCVAR_DEFINE_STRING(keybind_rstick_left, "Numpad4", "Input/Keybinds/Controller", "Right stick left");
+-REXCVAR_DEFINE_STRING(keybind_rstick_right, "Numpad6", "Input/Keybinds/Controller", "Right stick right");
+-REXCVAR_DEFINE_STRING(keybind_rstick_press, "Numpad5", "Input/Keybinds/Controller", "Right stick press");
+-REXCVAR_DEFINE_STRING(keybind_dpad_up, "Up", "Input/Keybinds/Controller", "D-pad up");
+-REXCVAR_DEFINE_STRING(keybind_dpad_down, "Down", "Input/Keybinds/Controller", "D-pad down");
+-REXCVAR_DEFINE_STRING(keybind_dpad_left, "Left", "Input/Keybinds/Controller", "D-pad left");
+-REXCVAR_DEFINE_STRING(keybind_dpad_right, "Right", "Input/Keybinds/Controller", "D-pad right");
+-REXCVAR_DEFINE_STRING(keybind_back, "Tab", "Input/Keybinds/Controller", "Back button");
+-REXCVAR_DEFINE_STRING(keybind_start, "Return", "Input/Keybinds/Controller", "Start button");
++REXCVAR_DEFINE_STRING(keybind_a, "Space,K,Return,Numpad1", "Input/Keybinds/Controller", "A button");
++REXCVAR_DEFINE_STRING(keybind_b, "Backspace,L,Escape,Numpad2", "Input/Keybinds/Controller", "B button");
++REXCVAR_DEFINE_STRING(keybind_x, "J,X,Numpad4", "Input/Keybinds/Controller", "X button");
++REXCVAR_DEFINE_STRING(keybind_y, "I,U,Numpad5", "Input/Keybinds/Controller", "Y button");
++REXCVAR_DEFINE_STRING(keybind_left_trigger, "Shift,Z", "Input/Keybinds/Controller", "Left trigger");
++REXCVAR_DEFINE_STRING(keybind_right_trigger, "F,Control", "Input/Keybinds/Controller", "Right trigger");
++REXCVAR_DEFINE_STRING(keybind_left_shoulder, "Q,C", "Input/Keybinds/Controller", "Left shoulder");
++REXCVAR_DEFINE_STRING(keybind_right_shoulder, "E,R,Tab", "Input/Keybinds/Controller", "Right shoulder");
++REXCVAR_DEFINE_STRING(keybind_lstick_up, "W,Up", "Input/Keybinds/Controller", "Left stick up");
++REXCVAR_DEFINE_STRING(keybind_lstick_down, "S,Down", "Input/Keybinds/Controller", "Left stick down");
++REXCVAR_DEFINE_STRING(keybind_lstick_left, "A,Left", "Input/Keybinds/Controller", "Left stick left");
++REXCVAR_DEFINE_STRING(keybind_lstick_right, "D,Right", "Input/Keybinds/Controller", "Left stick right");
++REXCVAR_DEFINE_STRING(keybind_lstick_press, "O", "Input/Keybinds/Controller", "Left stick press");
++REXCVAR_DEFINE_STRING(keybind_rstick_up, "Numpad8,T", "Input/Keybinds/Controller", "Right stick up");
++REXCVAR_DEFINE_STRING(keybind_rstick_down, "Numpad2,G", "Input/Keybinds/Controller", "Right stick down");
++REXCVAR_DEFINE_STRING(keybind_rstick_left, "Numpad4,V", "Input/Keybinds/Controller", "Right stick left");
++REXCVAR_DEFINE_STRING(keybind_rstick_right, "Numpad6,B", "Input/Keybinds/Controller", "Right stick right");
++REXCVAR_DEFINE_STRING(keybind_rstick_press, "P", "Input/Keybinds/Controller", "Right stick press");
++REXCVAR_DEFINE_STRING(keybind_dpad_up, "Up,1", "Input/Keybinds/Controller", "D-pad up");
++REXCVAR_DEFINE_STRING(keybind_dpad_down, "Down,2", "Input/Keybinds/Controller", "D-pad down");
++REXCVAR_DEFINE_STRING(keybind_dpad_left, "Left,3", "Input/Keybinds/Controller", "D-pad left");
++REXCVAR_DEFINE_STRING(keybind_dpad_right, "Right,4", "Input/Keybinds/Controller", "D-pad right");
++REXCVAR_DEFINE_STRING(keybind_back, "Tab,Backspace,M", "Input/Keybinds/Controller", "Back button");
++REXCVAR_DEFINE_STRING(keybind_start, "Return,Escape", "Input/Keybinds/Controller", "Start button");
+ REXCVAR_DEFINE_STRING(keybind_guide, "", "Input/Keybinds/Controller", "Guide button");
+ 
+ namespace rex::input::mnk {
+@@ -156,12 +156,37 @@ bool MnkInputDriver::IsEnabled() const {
+   return REXCVAR_GET(mnk_mode);
+ }
+ 
++// A binding is a comma-separated list of key names ("Space,K"); any of them presses the button. "Shift" and "Control"
++// also match the left / right keys.
+ static bool IsBindPressed(const bool (&key_down)[256], const std::string& cvar_val) {
+-  VirtualKey vk = rex::ui::ParseVirtualKey(cvar_val);
+-  if (vk == VirtualKey::kNone)
+-    return false;
+-  uint16_t idx = static_cast<uint16_t>(vk);
+-  return idx < 256 && key_down[idx];
++  auto down = [&](VirtualKey vk) {
++    uint16_t idx = static_cast<uint16_t>(vk);
++    return idx < 256 && key_down[idx];
++  };
++  size_t start = 0;
++  while (start <= cvar_val.size()) {
++    size_t end = cvar_val.find(',', start);
++    if (end == std::string::npos)
++      end = cvar_val.size();
++    std::string name = cvar_val.substr(start, end - start);
++    while (!name.empty() && name.front() == ' ')
++      name.erase(name.begin());
++    while (!name.empty() && name.back() == ' ')
++      name.pop_back();
++    if (name == "Shift") {
++      if (down(VirtualKey::kShift) || down(VirtualKey::kLShift) || down(VirtualKey::kRShift))
++        return true;
++    } else if (name == "Control") {
++      if (down(VirtualKey::kControl) || down(VirtualKey::kLControl) || down(VirtualKey::kRControl))
++        return true;
++    } else if (!name.empty()) {
++      VirtualKey vk = rex::ui::ParseVirtualKey(name);
++      if (vk != VirtualKey::kNone && down(vk))
++        return true;
++    }
++    start = end + 1;
++  }
++  return false;
+ }
+ 
+ // Virtual keys consumed by the guest's front-end keyboard UI through
+@@ -314,88 +339,64 @@ X_RESULT MnkInputDriver::GetState(uint32_t user_index, X_INPUT_STATE* out_state)
+   };
+ 
+   uint16_t buttons = 0;
+-  if (IsBindPressed(key_down_, REXCVAR_GET(keybind_a)) || is_key(VirtualKey::kReturn) ||
+-      is_key(VirtualKey::kSpace) || is_key(VirtualKey::kK) || is_key(VirtualKey::kNumpad1))
++  if (IsBindPressed(key_down_, REXCVAR_GET(keybind_a)))
+     buttons |= X_INPUT_GAMEPAD_A;
+-  if (IsBindPressed(key_down_, REXCVAR_GET(keybind_b)) || is_key(VirtualKey::kEscape) ||
+-      is_key(VirtualKey::kBack) || is_key(VirtualKey::kL) || is_key(VirtualKey::kNumpad2))
++  if (IsBindPressed(key_down_, REXCVAR_GET(keybind_b)))
+     buttons |= X_INPUT_GAMEPAD_B;
+-  if (IsBindPressed(key_down_, REXCVAR_GET(keybind_x)) || is_key(VirtualKey::kJ) ||
+-      is_key(VirtualKey::kX) || is_key(VirtualKey::kNumpad4))
++  if (IsBindPressed(key_down_, REXCVAR_GET(keybind_x)))
+     buttons |= X_INPUT_GAMEPAD_X;
+-  if (IsBindPressed(key_down_, REXCVAR_GET(keybind_y)) || is_key(VirtualKey::kI) ||
+-      is_key(VirtualKey::kU) || is_key(VirtualKey::kNumpad5))
++  if (IsBindPressed(key_down_, REXCVAR_GET(keybind_y)))
+     buttons |= X_INPUT_GAMEPAD_Y;
+-  if (IsBindPressed(key_down_, REXCVAR_GET(keybind_left_shoulder)) || is_key(VirtualKey::kQ) ||
+-      is_key(VirtualKey::kC))
++  if (IsBindPressed(key_down_, REXCVAR_GET(keybind_left_shoulder)))
+     buttons |= X_INPUT_GAMEPAD_LEFT_SHOULDER;
+-  if (IsBindPressed(key_down_, REXCVAR_GET(keybind_right_shoulder)) || is_key(VirtualKey::kE) ||
+-      is_key(VirtualKey::kR) || is_key(VirtualKey::kTab))
++  if (IsBindPressed(key_down_, REXCVAR_GET(keybind_right_shoulder)))
+     buttons |= X_INPUT_GAMEPAD_RIGHT_SHOULDER;
+-  if (IsBindPressed(key_down_, REXCVAR_GET(keybind_lstick_press)) || is_key(VirtualKey::kO))
++  if (IsBindPressed(key_down_, REXCVAR_GET(keybind_lstick_press)))
+     buttons |= X_INPUT_GAMEPAD_LEFT_THUMB;
+-  if (IsBindPressed(key_down_, REXCVAR_GET(keybind_rstick_press)) || is_key(VirtualKey::kP))
++  if (IsBindPressed(key_down_, REXCVAR_GET(keybind_rstick_press)))
+     buttons |= X_INPUT_GAMEPAD_RIGHT_THUMB;
+-  if (IsBindPressed(key_down_, REXCVAR_GET(keybind_back)) || is_key(VirtualKey::kBack) ||
+-      is_key(VirtualKey::kM))
++  if (IsBindPressed(key_down_, REXCVAR_GET(keybind_back)))
+     buttons |= X_INPUT_GAMEPAD_BACK;
+-  if (IsBindPressed(key_down_, REXCVAR_GET(keybind_start)) || is_key(VirtualKey::kReturn) ||
+-      is_key(VirtualKey::kEscape))
++  if (IsBindPressed(key_down_, REXCVAR_GET(keybind_start)))
+     buttons |= X_INPUT_GAMEPAD_START;
+   if (IsBindPressed(key_down_, REXCVAR_GET(keybind_guide)))
+     buttons |= X_INPUT_GAMEPAD_GUIDE;
+-  if (IsBindPressed(key_down_, REXCVAR_GET(keybind_dpad_up)) || is_key(VirtualKey::kUp) ||
+-      is_key(VirtualKey::k1))
++  if (IsBindPressed(key_down_, REXCVAR_GET(keybind_dpad_up)))
+     buttons |= X_INPUT_GAMEPAD_DPAD_UP;
+-  if (IsBindPressed(key_down_, REXCVAR_GET(keybind_dpad_down)) || is_key(VirtualKey::kDown) ||
+-      is_key(VirtualKey::k2))
++  if (IsBindPressed(key_down_, REXCVAR_GET(keybind_dpad_down)))
+     buttons |= X_INPUT_GAMEPAD_DPAD_DOWN;
+-  if (IsBindPressed(key_down_, REXCVAR_GET(keybind_dpad_left)) || is_key(VirtualKey::kLeft) ||
+-      is_key(VirtualKey::k3))
++  if (IsBindPressed(key_down_, REXCVAR_GET(keybind_dpad_left)))
+     buttons |= X_INPUT_GAMEPAD_DPAD_LEFT;
+-  if (IsBindPressed(key_down_, REXCVAR_GET(keybind_dpad_right)) || is_key(VirtualKey::kRight) ||
+-      is_key(VirtualKey::k4))
++  if (IsBindPressed(key_down_, REXCVAR_GET(keybind_dpad_right)))
+     buttons |= X_INPUT_GAMEPAD_DPAD_RIGHT;
+ 
+-  const bool lt_pressed = IsBindPressed(key_down_, REXCVAR_GET(keybind_left_trigger)) ||
+-                          is_key(VirtualKey::kShift) || is_key(VirtualKey::kLShift) ||
+-                          is_key(VirtualKey::kRShift) || is_key(VirtualKey::kZ);
+-  const bool rt_pressed = IsBindPressed(key_down_, REXCVAR_GET(keybind_right_trigger)) ||
+-                          is_key(VirtualKey::kControl) || is_key(VirtualKey::kLControl) ||
+-                          is_key(VirtualKey::kRControl) || is_key(VirtualKey::kF);
++  const bool lt_pressed = IsBindPressed(key_down_, REXCVAR_GET(keybind_left_trigger));
++  const bool rt_pressed = IsBindPressed(key_down_, REXCVAR_GET(keybind_right_trigger));
+   uint8_t lt = lt_pressed ? 0xFF : 0;
+   uint8_t rt = rt_pressed ? 0xFF : 0;
+ 
+   int32_t lx = 0;
+   int32_t ly = 0;
+-  if (IsBindPressed(key_down_, REXCVAR_GET(keybind_lstick_left)) || is_key(VirtualKey::kA) ||
+-      is_key(VirtualKey::kLeft))
++  if (IsBindPressed(key_down_, REXCVAR_GET(keybind_lstick_left)))
+     lx -= INT16_MAX;
+-  if (IsBindPressed(key_down_, REXCVAR_GET(keybind_lstick_right)) || is_key(VirtualKey::kD) ||
+-      is_key(VirtualKey::kRight))
++  if (IsBindPressed(key_down_, REXCVAR_GET(keybind_lstick_right)))
+     lx += INT16_MAX;
+-  if (IsBindPressed(key_down_, REXCVAR_GET(keybind_lstick_up)) || is_key(VirtualKey::kW) ||
+-      is_key(VirtualKey::kUp))
++  if (IsBindPressed(key_down_, REXCVAR_GET(keybind_lstick_up)))
+     ly += INT16_MAX;
+-  if (IsBindPressed(key_down_, REXCVAR_GET(keybind_lstick_down)) || is_key(VirtualKey::kS) ||
+-      is_key(VirtualKey::kDown))
++  if (IsBindPressed(key_down_, REXCVAR_GET(keybind_lstick_down)))
+     ly -= INT16_MAX;
+ 
+   double sensitivity = REXCVAR_GET(mnk_sensitivity);
+   constexpr double kBaseScale = 200.0;
+   int32_t rx = 0;
+   int32_t ry = 0;
+-  if (IsBindPressed(key_down_, REXCVAR_GET(keybind_rstick_left)) || is_key(VirtualKey::kNumpad4) ||
+-      is_key(VirtualKey::kV))
++  if (IsBindPressed(key_down_, REXCVAR_GET(keybind_rstick_left)))
+     rx -= INT16_MAX;
+-  if (IsBindPressed(key_down_, REXCVAR_GET(keybind_rstick_right)) || is_key(VirtualKey::kNumpad6) ||
+-      is_key(VirtualKey::kB))
++  if (IsBindPressed(key_down_, REXCVAR_GET(keybind_rstick_right)))
+     rx += INT16_MAX;
+-  if (IsBindPressed(key_down_, REXCVAR_GET(keybind_rstick_up)) || is_key(VirtualKey::kNumpad8) ||
+-      is_key(VirtualKey::kT))
++  if (IsBindPressed(key_down_, REXCVAR_GET(keybind_rstick_up)))
+     ry += INT16_MAX;
+-  if (IsBindPressed(key_down_, REXCVAR_GET(keybind_rstick_down)) || is_key(VirtualKey::kNumpad2) ||
+-      is_key(VirtualKey::kG))
++  if (IsBindPressed(key_down_, REXCVAR_GET(keybind_rstick_down)))
+     ry -= INT16_MAX;
+   rx += static_cast<int32_t>(mouse_dx_ * sensitivity * kBaseScale);
+   ry += static_cast<int32_t>(-mouse_dy_ * sensitivity * kBaseScale);
+diff --git a/src/input/xinput/xinput_input_driver.cpp b/src/input/xinput/xinput_input_driver.cpp
+index 844612b..ff3174f 100644
+--- a/src/input/xinput/xinput_input_driver.cpp
++++ b/src/input/xinput/xinput_input_driver.cpp
+@@ -21,6 +21,10 @@
+ #include <rex/ui/virtual_key.h>
+ #include <xinput.h>  // NOLINT(build/include_order)
+ 
++#include <algorithm>
++
++REXCVAR_DEFINE_STRING(pad_remap, "", "Input", "Controller button remap: FROM=TO pairs, e.g. A=B,B=A");
++
+ namespace rex::input::xinput {
+ 
+ XinputInputDriver::XinputInputDriver(rex::ui::Window* window, size_t window_z_order)
+@@ -135,6 +139,86 @@ X_RESULT XinputInputDriver::GetCapabilities(uint32_t user_index, uint32_t flags,
+   return result;
+ }
+ 
++// Controller button remap: comma-separated FROM=TO pairs of A B X Y LB RB LT RT START BACK LS RS UP DOWN LEFT RIGHT
++// (e.g. "A=B,B=A"). Buttons that are not listed keep their own function.
++namespace {
++struct PadInput {
++  const char* name;
++  uint16_t bit;  // 0 for the triggers
++  int trigger;   // 1 left, 2 right
++};
++constexpr PadInput kPadInputs[] = {
++    {"A", 0x1000, 0},    {"B", 0x2000, 0},   {"X", 0x4000, 0},   {"Y", 0x8000, 0},    {"LB", 0x0100, 0},
++    {"RB", 0x0200, 0},   {"LT", 0, 1},       {"RT", 0, 2},       {"START", 0x0010, 0}, {"BACK", 0x0020, 0},
++    {"LS", 0x0040, 0},   {"RS", 0x0080, 0},  {"UP", 0x0001, 0},  {"DOWN", 0x0002, 0}, {"LEFT", 0x0004, 0},
++    {"RIGHT", 0x0008, 0},
++};
++constexpr int kPadInputCount = int(std::size(kPadInputs));
++
++int FindPadInput(const std::string& name) {
++  for (int i = 0; i < kPadInputCount; ++i)
++    if (name == kPadInputs[i].name)
++      return i;
++  return -1;
++}
++
++void ApplyPadRemap(X_INPUT_GAMEPAD& pad) {
++  static std::string parsed_from;
++  static std::array<int, kPadInputCount> target{};
++  static bool active = false;
++  const std::string config = REXCVAR_GET(pad_remap);
++  if (config != parsed_from || parsed_from.empty()) {
++    parsed_from = config;
++    active = false;
++    for (int i = 0; i < kPadInputCount; ++i)
++      target[i] = i;
++    size_t start = 0;
++    while (start < config.size()) {
++      size_t end = config.find(',', start);
++      if (end == std::string::npos)
++        end = config.size();
++      const std::string pair = config.substr(start, end - start);
++      const size_t eq = pair.find('=');
++      if (eq != std::string::npos) {
++        const int from = FindPadInput(pair.substr(0, eq));
++        const int to = FindPadInput(pair.substr(eq + 1));
++        if (from >= 0 && to >= 0 && from != to) {
++          target[from] = to;
++          active = true;
++        }
++      }
++      start = end + 1;
++    }
++  }
++  if (!active)
++    return;
++  uint16_t known = 0;
++  for (const auto& in : kPadInputs)
++    known |= in.bit;
++  uint16_t buttons = pad.buttons & ~known;  // guide and anything else stays as it is
++  uint8_t lt = 0, rt = 0;
++  for (int i = 0; i < kPadInputCount; ++i) {
++    const PadInput& in = kPadInputs[i];
++    const uint8_t value = in.trigger == 1   ? uint8_t(pad.left_trigger)
++                          : in.trigger == 2 ? uint8_t(pad.right_trigger)
++                          : (pad.buttons & in.bit) ? uint8_t(255)
++                                                   : uint8_t(0);
++    if (!value)
++      continue;
++    const PadInput& out = kPadInputs[target[i]];
++    if (out.trigger == 1)
++      lt = std::max(lt, value);
++    else if (out.trigger == 2)
++      rt = std::max(rt, value);
++    else if (value > 30)
++      buttons |= out.bit;
++  }
++  pad.buttons = buttons;
++  pad.left_trigger = lt;
++  pad.right_trigger = rt;
++}
++}  // namespace
++
+ X_RESULT XinputInputDriver::GetState(uint32_t user_index, X_INPUT_STATE* out_state) {
+   DWORD skipper = should_skip(user_index);
+   if (skipper) {
+@@ -168,6 +252,7 @@ X_RESULT XinputInputDriver::GetState(uint32_t user_index, X_INPUT_STATE* out_sta
+   out_state->gamepad.thumb_ly = native_state.state.Gamepad.sThumbLY;
+   out_state->gamepad.thumb_rx = native_state.state.Gamepad.sThumbRX;
+   out_state->gamepad.thumb_ry = native_state.state.Gamepad.sThumbRY;
++  ApplyPadRemap(out_state->gamepad);
+ 
+   return result;
+ }
+-- 
+2.56.0.windows.2
+

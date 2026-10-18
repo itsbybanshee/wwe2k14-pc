@@ -2885,6 +2885,15 @@ typedef unsigned char byte_t;
 ///////////////////////////////////////////////////////////////////////////////
 ```
 
+## Xbox 360 button icons (launcher)
+
+launcher/ui/icons/*.svg: "Xbox button A/B/X/Y", "Xbox Left/Right Bumper", "Xbox Left/Right Trigger",
+"Xbox Start button", "Xbox Back button" and "Xbox Left/Right stick button" by VictorPines, from Wikimedia
+Commons (https://commons.wikimedia.org/wiki/Category:Xbox_buttons), licensed under CC BY-SA 4.0
+(https://creativecommons.org/licenses/by-sa/4.0/). Used unchanged.
+icons/up, down, left, right, dpad.svg: D-pad icons by Banshee.
+controller.svg: "Xbox Controller" by Jishenaz, Wikimedia Commons, CC0 (public domain dedication).
+
 ## Microsoft Edge WebView2 SDK (launcher)
 
 ```
