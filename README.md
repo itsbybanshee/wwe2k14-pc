@@ -7,8 +7,8 @@ WWE 2K14 PC recompilation with a launcher that adds modern graphics options, mod
 
 ## What's new in v1.1
 
-- 🌍 **Play in your language**: 🇬🇧🇫🇷🇩🇪🇮🇹🇪🇸. The game's menus and text, achievements launcher switch with one click.
-- 🎮 **Button mapper**: remap every controller button and keyboard key. **Export / import** your control schemes to share them.
+- 🌍 **Languages**: supported ENG/FRA/GER/ITA/SPA. The game's menus and text, achievements launcher switch with one click.
+- 🎮 **Button mapper**: remap controller and keyboard binds. **Export / import** your control schemes to share them.
 - ⌨️ **Modern keyboard layout**: default keys in the style of current WWE 2K games on PC.
 - 🕹️ **Controls window**: an Xbox 360 controller diagram with real button icons, plus keyboard and custom pages.
 - ✨ **Launcher polish**: fits any screen size, cleaner and more consistent look.
