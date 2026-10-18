@@ -76,6 +76,10 @@ Online features of the original game are not available. This is an early release
   licence ([patches/sdk/LICENSE](patches/sdk/LICENSE))
 - **Banshee** ([@itsbybanshee](https://x.com/itsbybanshee)): WWE 2K14 PC port and launcher
 
+## Known Issues
+
+- Bobby Heenan renders completely white.
+
 ## Roadmap
 
 - "Wrestling Legends" mod music fix
