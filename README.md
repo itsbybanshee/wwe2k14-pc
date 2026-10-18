@@ -1,4 +1,4 @@
-# WWE 2K14 PC Recomp (By Banshee)
+# WWE 2K14 PC Recomp (By Banshee) v.1.1
 
 WWE 2K14 PC recompilation with a launcher that adds modern graphics options, mods, custom logos, your own music and more.
 
@@ -7,13 +7,10 @@ WWE 2K14 PC recompilation with a launcher that adds modern graphics options, mod
 
 ## What's new in v1.1
 
-- 🌍 **Play in your language**: French, German, Italian and Spanish. The game's menus and text, the achievements
-  (in the game's own official translations) and the whole launcher switch with one click.
-- 🎮 **Button mapper**: remap every controller button and keyboard key. Just press the button or key you want, reset
-  anytime, and **export / import** your control schemes to share them.
-- ⌨️ **Modern keyboard layout**: default keys in the style of current WWE 2K games on PC (J strike, L grapple,
-  I reverse, Space finisher, Shift run).
-- 🕹️ **New Controls window**: an Xbox 360 controller diagram with real button icons, plus keyboard and custom pages.
+- 🌍 **Play in your language**: 🇬🇧🇫🇷🇩🇪🇮🇹🇪🇸. The game's menus and text, achievements launcher switch with one click.
+- 🎮 **Button mapper**: remap every controller button and keyboard key. **Export / import** your control schemes to share them.
+- ⌨️ **Modern keyboard layout**: default keys in the style of current WWE 2K games on PC.
+- 🕹️ **Controls window**: an Xbox 360 controller diagram with real button icons, plus keyboard and custom pages.
 - ✨ **Launcher polish**: fits any screen size, cleaner and more consistent look.
 
 ## Features
