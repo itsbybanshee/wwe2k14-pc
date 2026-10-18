@@ -104,6 +104,8 @@ def pack_encrypted_ui(launcher_exe: Path, ui_src: Path, output_dat: Path) -> Non
     for item in ui_src.iterdir():
         if item.name == "launcher.js":
             minify_js(item, temp_ui / "launcher.js")
+        elif item.is_dir():
+            shutil.copytree(item, temp_ui / item.name)   # e.g. icons/
         else:
             shutil.copy2(item, temp_ui / item.name)
 
@@ -197,6 +199,8 @@ folder).
    logo library so you can keep more than 20 and choose which ones to use
  - Mods (wrestlers, arenas, menus, videos, sounds), turn each one on/off
  - DLC support
+ - Play in English, French, German, Italian or Spanish (Language, under
+   GRAPHICS in the launcher)
  - Screenshots with F12
 
 
@@ -298,18 +302,19 @@ folder).
 
  Keyboard (main keys; the full list is under "Controls" in the launcher):
 
-   Move ................ W A S D  (or arrow keys)
-   Run ................. E + move
-   Grapple ............. Space or K
+   Move ................ W A S D
+   Run ................. Shift + move
    Strike .............. J
-   Irish whip / Pin .... L
-   Signature/Finisher .. I
-   Reverse / Block ..... F or Ctrl
-   Apron / Ring ........ Shift
-   Pick up objects ..... Q
-   Change hold ......... T G V B, numpad 8 2 4 6, or move the mouse
-   Taunts .............. 1 2 3 4
-   Pause ............... Enter or Esc
+   Grapple ............. L
+   Irish whip / Pin .... K
+   Signature/Finisher .. Space
+   Reverse / Block ..... I
+   Apron / Ring ........ O
+   Pick up objects ..... U
+   Change target ....... C
+   Change hold ......... T F G H, numpad 8 4 2 6, or move the mouse
+   Taunts .............. 1 2 3 4 or arrow keys
+   Pause ............... Esc
 
  Mouse in menus: point to select, click to choose, wheel to scroll.
  You can also click the on-screen button prompts (like "B Back" or

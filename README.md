@@ -5,13 +5,26 @@ WWE 2K14 PC recompilation with a launcher that adds modern graphics options, mod
 - No game data included. You need your own legally acquired WWE 2K14 (Xbox 360) files: a disc image (`.iso`) or the
   extracted game folder.
 
+## What's new in v1.1
+
+- 🌍 **Play in your language**: French, German, Italian and Spanish. The game's menus and text, the achievements
+  (in the game's own official translations) and the whole launcher switch with one click.
+- 🎮 **Button mapper**: remap every controller button and keyboard key. Just press the button or key you want, reset
+  anytime, and **export / import** your control schemes to share them.
+- ⌨️ **Modern keyboard layout**: default keys in the style of current WWE 2K games on PC (J strike, L grapple,
+  I reverse, Space finisher, Shift run).
+- 🕹️ **New Controls window**: an Xbox 360 controller diagram with real button icons, plus keyboard and custom pages.
+- ✨ **Launcher polish**: fits any screen size, cleaner and more consistent look.
+
 ## Features
 
 - **Resolution**: 720p, 1080p, 1440p or 4K
 - **AMD FidelityFX Super Resolution (FSR)**
 - **NVIDIA FXAA 3.11 Quality** anti-aliasing (FXAA / Max)
 - **60 FPS entrances and victory scenes**
-- **Keyboard gameplay**
+- **Keyboard gameplay** with a modern WWE 2K-style layout
+- **Button mapper** for controller and keyboard, with export / import of control schemes
+- **Languages**: English, French, German, Italian or Spanish (game, achievements and launcher)
 - **Mouse support**: point-and-click menus, wrestler select, clickable button prompts
 - **Runs straight from your `.iso`**, or from an extracted game folder
 - **Mods** (wrestlers, arenas, menus, videos, sounds) with an on/off switch each
@@ -39,7 +52,7 @@ To update, unzip the new version over the old one: `userdata` and `mods` are kep
 ## Controls
 
 An Xbox controller (or any controller Windows sees as one) works like on the Xbox 360. Keyboard works too; the full
-layout is under **Controls** in the launcher.
+layout is under **Controls** in the launcher, and **Controls > Custom** lets you remap any button or key.
 
 Mouse in menus: point to select, click to choose, wheel to scroll, click on-screen button prompts (like **B Back**),
 middle click = Start.

@@ -230,7 +230,7 @@ body::before {
     gap: 12px;
     padding: 12px 12px 12px 14px;
     border: 1px solid rgb(255 255 255 / 14%);
-    border-radius: 14px;
+    border-radius: 12px;
     background: rgb(255 255 255 / 4%);
     box-shadow: inset 0 1px 1px rgb(255 255 255 / 12%);
 }
@@ -284,7 +284,7 @@ body::before {
     gap: 6px;
     padding: 0 12px 0 10px;
     border: 1px solid rgb(255 255 255 / 18%);
-    border-radius: 999px;
+    border-radius: 10px;
     background: rgb(255 255 255 / 7%);
     color: rgb(255 255 255 / 80%);
     cursor: pointer;
@@ -355,7 +355,7 @@ body::before {
     height: 40px;
     gap: 5px;
     padding: 3px;
-    border-radius: 14px;
+    border-radius: 12px;
     background: linear-gradient(135deg, rgb(255 255 255 / 72%), rgb(215 224 235 / 30%));
     box-shadow: 0 9px 22px rgb(37 49 66 / 12%);
 }
@@ -364,7 +364,7 @@ body::before {
     min-width: 0;
     flex: 1;
     border: 0;
-    border-radius: 10px;
+    border-radius: 9px;
     background: rgb(82 97 116 / 10%);
     color: #fff;
     cursor: pointer;
@@ -489,6 +489,125 @@ body::before {
     pointer-events: none;
 }
 
+/* Button mapper (Controls > Custom) */
+.mapper-actions .mapper-io {
+    width: 140px;
+}
+
+.mapper-actions .controls-note {
+    margin: 0;   /* centred on the Import / Export bar */
+}
+
+.mapper-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.controls-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.controls-bar #save-mapping {
+    height: 36px;
+    padding: 0 22px;
+    border-radius: 12px;
+    font-size: 13px;
+}
+
+.controls-bar #save-mapping[hidden] {
+    display: none;
+}
+
+.controls-bar #save-mapping:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+.mapper-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 14px 0 8px;
+}
+
+.mapper-head h3 {
+    margin: 0;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.mapper-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-flow: column;   /* fill column by column: face buttons stay together */
+    gap: 6px 18px;
+}
+
+.mapper-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    min-height: 30px;
+    font-size: 12.5px;
+}
+
+.mapper-key {
+    min-width: 150px;
+    max-width: 72%;
+    height: 28px;
+    flex: 0 1 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 0 10px;
+    border: 1px solid rgb(255 255 255 / 18%);
+    border-radius: 9px;
+    background: rgb(255 255 255 / 8%);
+    color: #fff;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+
+.mapper-key.is-custom {
+    border-color: rgb(255 216 77 / 60%);
+    color: #ffd84d;
+}
+
+.mapper-key.is-listening {
+    border-color: #fff;
+    background: rgb(255 255 255 / 18%);
+}
+
+/* Xbox 360 button icons (controller diagram, button mapper) */
+.pad-icon {
+    width: 20px;
+    height: 20px;
+    flex: none;
+    object-fit: contain;   /* bumpers and triggers are not square */
+    vertical-align: middle;
+}
+
+.controls-callout .pad-icon {
+    width: 26px;
+    height: 18px;   /* rows are ~19px apart: never taller than a row */
+}
+
+.mapper-name {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
 /* Setting label & description on a single line with dash */
 .setting-text {
     display: inline-flex;
@@ -584,7 +703,7 @@ body::before {
     margin-top: 14px;
     padding: 12px 14px;
     border: 1px solid rgb(255 216 77 / 40%);
-    border-radius: 14px;
+    border-radius: 12px;
     background: rgb(255 216 77 / 6%);
     animation: popup-fade-in 140ms ease-out both;
 }
@@ -720,7 +839,7 @@ body::before {
     gap: 8px;
     padding: 12px 14px;
     border: 1px solid rgb(255 216 77 / 40%);
-    border-radius: 14px;
+    border-radius: 12px;
     background: rgb(255 216 77 / 6%);
 }
 
@@ -988,7 +1107,7 @@ body::before {
     width: 100%;
     max-width: 360px;
     padding: 14px 12px;
-    border-radius: 14px;
+    border-radius: 12px;
 }
 
 .ach-filter .segment[aria-checked="true"] {
@@ -1012,7 +1131,7 @@ body::before {
     gap: 12px;
     padding: 12px;
     border: 1px solid rgb(255 255 255 / 14%);
-    border-radius: 14px;
+    border-radius: 12px;
     background: rgb(255 255 255 / 4%);
     box-shadow: inset 0 1px 1px rgb(255 255 255 / 12%);
 }
@@ -1115,7 +1234,7 @@ body::before {
     gap: 10px;
     padding: 0 28px;
     border: 0;
-    border-radius: 999px;
+    border-radius: 22px;
     background: #f5f7fa;
     box-shadow: 0 12px 30px rgb(0 0 0 / 40%);
     color: #111;
@@ -1201,7 +1320,6 @@ body::before {
    hover animation showed a light line in the gap between the panels). The Play button keeps its own
    layer too, so its hover grow never repaints its neighbours. */
 .glass-panel,
-.segment-group,
 .social-link,
 .ach-summary {
     transform: translateZ(0);
@@ -1222,18 +1340,59 @@ body::before {
     overflow: hidden;
 }
 
-/* Left panel: everything fits comfortably without scrolling */
+/* Left panel: always keeps the same space under the last section. When the window is too small for all the
+   settings, the panel scrolls (thin scrollbar) instead of cutting them off. */
 .launcher-layout > .glass-panel:first-child {
     gap: 10px;
+    justify-content: space-between;
     padding: 18px 22px;
-    overflow: hidden !important;
-    scrollbar-width: none !important;
+    overflow: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: rgb(255 255 255 / 22%) transparent;
 }
 
-.launcher-layout > .glass-panel:first-child::-webkit-scrollbar {
-    display: none !important;
-    width: 0 !important;
-    height: 0 !important;
+.launcher-layout > .glass-panel:first-child > .panel-section {
+    flex: none;
+}
+
+/* Shorter windows: tighter spacing in whole pixels first (fitToWindow in launcher.js), so controls stay
+   pixel-sharp; the whole page is only scaled down when even the tightest spacing does not fit. */
+.launcher-layout > .glass-panel.fit-1 {
+    gap: 4px;
+    padding-top: 14px;
+    padding-bottom: 14px;
+}
+
+.glass-panel.fit-1 .section-rule {
+    margin-bottom: 6px;
+}
+
+.glass-panel.fit-1 .settings-list {
+    gap: 4px;
+}
+
+.glass-panel.fit-1 .segment-group:not(.segment-group-mini) {
+    height: 36px;
+}
+
+.glass-panel.fit-2 .section-rule {
+    margin-bottom: 4px;
+}
+
+.glass-panel.fit-2 .settings-list {
+    gap: 2px;
+}
+
+.glass-panel.fit-2 .segment-group:not(.segment-group-mini) {
+    height: 32px;
+}
+
+.glass-panel.fit-3 .setting-row {
+    min-height: 20px;
+}
+
+.glass-panel.fit-3 .segment-group:not(.segment-group-mini) {
+    height: 30px;
 }
 
 .launcher-layout > .glass-panel:first-child .section-rule {
@@ -1533,16 +1692,37 @@ body::before {
     position: relative;
     padding: 14px 0;
     border-radius: 16px;
-    background: #fff;
-    color: #1d2430;
+    background: transparent;
+    color: #f5f7fa;
 }
 
-.controls-figure img {
+.controls-figure .controller-img {
     display: block;
     width: 56%;
     height: auto;
     margin-left: 2%;
     user-select: none;
+}
+
+.controls-leaders {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+    /* dark outline around the white lines, so they stand out over the light controller */
+    filter: drop-shadow(0 0 1px rgb(0 0 0 / 95%)) drop-shadow(0 0 1px rgb(0 0 0 / 95%));
+}
+
+.controls-leaders polyline {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 1.4;
+}
+
+.controls-leaders circle {
+    fill: #fff;
 }
 
 .controls-callout {

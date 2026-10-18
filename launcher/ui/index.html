@@ -172,9 +172,20 @@
                             <span class="setting-text">
                                 <span class="setting-name">Upscaling</span>
                                 <span class="setting-dash">-</span>
-                                <span class="setting-desc">AMD FidelityFX Super Resolution</span>
+                                <span class="setting-desc">AMD FidelityFX Super Resolution.</span>
                             </span>
                         </div>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h3 class="section-rule">Language</h3>
+                    <div class="segment-group" role="radiogroup" aria-label="Language" id="language-group">
+                        <button type="button" class="segment" role="radio" data-language="english">English</button>
+                        <button type="button" class="segment" role="radio" data-language="french">Français</button>
+                        <button type="button" class="segment" role="radio" data-language="german">Deutsch</button>
+                        <button type="button" class="segment" role="radio" data-language="italian">Italiano</button>
+                        <button type="button" class="segment" role="radio" data-language="spanish">Español</button>
                     </div>
                 </div>
             </section>
@@ -336,8 +347,8 @@
                 <h2 id="library-modal-title">Logo library</h2>
             </header>
             <div class="library-info-body">
-                <p>The game holds only <strong>20 custom logos</strong>. The library keeps <strong>all</strong> of yours, as many as you like, and you pick which 20 the game gets.</p>
-                <ul>
+                <p data-i18n-html="library-intro">The game holds only <strong>20 custom logos</strong>. The library keeps <strong>all</strong> of yours, as many as you like, and you pick which 20 the game gets.</p>
+                <ul data-i18n-html="library-list">
                     <li><strong>Add logos</strong> and <strong>Import PS3 save</strong> put logos in the library. While the game has free slots they also go straight into the game.</li>
                     <li><strong>Click a logo</strong> in the library to put it in the game or take it out. Logos in the game have a check mark.</li>
                     <li>Taking a logo out of the game keeps it in the library. The <strong>bin</strong> on a logo deletes it from the library for good.</li>
@@ -355,57 +366,76 @@
             <header class="ach-modal-header">
                 <span class="pill-label">WWE 2K14</span>
                 <h2 id="controls-modal-title">Controls</h2>
-                <div class="segment-group controls-switch" role="radiogroup" aria-label="Show">
-                    <button type="button" class="segment" role="radio" data-controls="controller">Controller</button>
-                    <button type="button" class="segment" role="radio" data-controls="keyboard">Keyboard</button>
+                <div class="controls-bar">
+                    <div class="segment-group controls-switch" role="radiogroup" aria-label="Show">
+                        <button type="button" class="segment" role="radio" data-controls="controller">Controller</button>
+                        <button type="button" class="segment" role="radio" data-controls="keyboard">Keyboard</button>
+                        <button type="button" class="segment" role="radio" data-controls="custom">Custom</button>
+                    </div>
+                    <button type="button" class="action-pill is-accent" id="save-mapping" hidden disabled>Save</button>
                 </div>
             </header>
 
             <div class="controls-view" id="controls-controller">
                 <p class="controls-note">Default gameplay controls (Control Type A).</p>
                 <div class="controls-figure">
-                    <img src="controller.webp" alt="Xbox 360 controller" draggable="false">
-                    <!-- Each label sits at the end of its leader line (y as a share of the image height). -->
-                    <div class="controls-callout" style="--y: 0.4%"><b>LT</b><span title="Tap + LS toward ropes: step on apron. Hold + LS toward ropes: enter / exit ring. Hold: pick up object.">+ LS to ropes: apron / enter or exit ring; hold: pick up</span></div>
-                    <div class="controls-callout" style="--y: 7.2%"><b>RT</b><span>Reverse / block attacks</span></div>
-                    <div class="controls-callout" style="--y: 22.8%"><b>LB</b><span>Hold: pick up objects; with RS: Limb Target System</span></div>
-                    <div class="controls-callout" style="--y: 29.6%"><b>RB</b><span>Hold + LS: run</span></div>
-                    <div class="controls-callout" style="--y: 34.1%"><b class="key-y">Y</b><span>Signature / Finisher</span></div>
-                    <div class="controls-callout" style="--y: 38.6%"><b class="key-b">B</b><span>Irish whip / Pin (grounded opponent)</span></div>
-                    <div class="controls-callout" style="--y: 49.8%"><b class="key-x">X</b><span>Strike; hold: strong strike</span></div>
-                    <div class="controls-callout" style="--y: 56.6%"><b class="key-a">A</b><span>Grapple</span></div>
-                    <div class="controls-callout" style="--y: 61.1%"><b>Guide</b><span>Not used</span></div>
-                    <div class="controls-callout" style="--y: 67.9%"><b>Start</b><span>Pause</span></div>
-                    <div class="controls-callout" style="--y: 72.3%"><b>Back</b><span>Help menu (menus)</span></div>
-                    <div class="controls-callout" style="--y: 90.3%"><b>RS</b><span>Change grapple hold, reposition opponent</span></div>
-                    <div class="controls-callout" style="--y: 94.8%"><b>D-pad</b><span>Taunts</span></div>
-                    <div class="controls-callout" style="--y: 99.3%"><b>LS</b><span>Move; click: target another opponent</span></div>
+                    <img class="controller-img" src="controller.svg" alt="Xbox 360 controller" draggable="false">
+                    <svg class="controls-leaders" aria-hidden="true"></svg>
+                    <!-- Rows top to bottom; the launcher draws a line from each button (data-anchor, % of the image) to its row. -->
+                    <div class="controls-callout" style="--y: 0.0%" data-anchor="25.3,12.8"><img class="pad-icon" src="icons/lt.svg" alt="LT"><span>Hold + LS: run</span></div>
+                    <div class="controls-callout" style="--y: 8.3%" data-anchor="75.1,12.8"><img class="pad-icon" src="icons/rt.svg" alt="RT"><span>Reverse / block attacks</span></div>
+                    <div class="controls-callout" style="--y: 16.7%" data-anchor="26.3,20.4"><img class="pad-icon" src="icons/lb.svg" alt="LB"><span title="Tap + LS toward ropes: step on apron. Hold + LS toward ropes: enter / exit ring. Hold: pick up object.">+ LS to ropes: apron / enter or exit ring; hold: pick up</span></div>
+                    <div class="controls-callout" style="--y: 25.0%" data-anchor="76.1,20.4"><img class="pad-icon" src="icons/rb.svg" alt="RB"><span>Hold: pick up objects; with RS: Limb Target System</span></div>
+                    <div class="controls-callout" style="--y: 33.3%" data-anchor="77.4,40.4"><img class="pad-icon" src="icons/y.svg" alt="Y"><span>Signature / Finisher</span></div>
+                    <div class="controls-callout" style="--y: 41.7%" data-anchor="84.8,48.2"><img class="pad-icon" src="icons/b.svg" alt="B"><span>Irish whip / Pin (grounded opponent)</span></div>
+                    <div class="controls-callout" style="--y: 50.0%" data-anchor="70.0,49.4"><img class="pad-icon" src="icons/x.svg" alt="X"><span>Strike; hold: strong strike</span></div>
+                    <div class="controls-callout" style="--y: 58.3%" data-anchor="40.1,49.4"><img class="pad-icon" src="icons/back.svg" alt="Back"><span>Help menu (menus)</span></div>
+                    <div class="controls-callout" style="--y: 66.7%" data-anchor="59.8,49.4"><img class="pad-icon" src="icons/start.svg" alt="Start"><span>Pause</span></div>
+                    <div class="controls-callout" style="--y: 75.0%" data-anchor="22.0,51.2"><img class="pad-icon" src="icons/l3.svg" alt="LS"><span>Move; click: target another opponent</span></div>
+                    <div class="controls-callout" style="--y: 83.3%" data-anchor="76.9,58.2"><img class="pad-icon" src="icons/a.svg" alt="A"><span>Grapple</span></div>
+                    <div class="controls-callout" style="--y: 91.7%" data-anchor="36.2,69.6"><img class="pad-icon" src="icons/dpad.svg" alt="D-pad"><span>Taunts</span></div>
+                    <div class="controls-callout" style="--y: 100.0%" data-anchor="62.5,71.6"><img class="pad-icon" src="icons/r3.svg" alt="RS"><span>Change grapple hold, reposition opponent</span></div>
                 </div>
             </div>
 
+            <div class="controls-view" id="controls-custom" hidden>
+                <p class="controls-note">Choose which controller button and which keys press each button. Save, then the changes apply the next time you press Play.</p>
+                <div class="mapper-actions">
+                    <div class="segment-group segment-group-mini mapper-io">
+                        <button type="button" class="segment" id="import-controls">Import</button>
+                        <button type="button" class="segment" id="export-controls">Export</button>
+                    </div>
+                    <span class="controls-note">Export saves your scheme to a file you can keep or share. Save after importing.</span>
+                </div>
+                <div class="mapper-head"><h3>Controller</h3><button type="button" class="action-pill" id="reset-pad">Reset to default</button></div>
+                <div class="mapper-grid" id="pad-map"></div>
+                <div class="mapper-head"><h3>Keyboard</h3><button type="button" class="action-pill" id="reset-keys">Reset to default</button></div>
+                <p class="controls-note">Click a button or key, then press the new one.</p>
+                <div class="mapper-grid" id="key-map"></div>
+            </div>
             <div class="controls-view" id="controls-keyboard" hidden>
                 <p class="controls-note">The keyboard plays as the controller: each key presses the button shown.</p>
                 <div class="key-table">
                     <h3>Movement</h3>
-                    <div class="key-row"><span class="keys"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> <span class="or">or</span> <kbd>Arrows</kbd></span><span>Move <em>(LS)</em></span></div>
-                    <div class="key-row"><span class="keys"><kbd>E</kbd> <span class="or">or</span> <kbd>R</kbd> + <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></span><span>Run <em>(RB)</em></span></div>
-                    <div class="key-row"><span class="keys"><kbd>Shift</kbd> <span class="or">or</span> <kbd>Z</kbd></span><span>Apron / enter or exit ring, pick up (hold) <em>(LT)</em></span></div>
-                    <div class="key-row"><span class="keys"><kbd>O</kbd></span><span>Target another opponent <em>(LS click)</em></span></div>
+                    <div class="key-row"><span class="keys"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></span><span>Move <em>(LS)</em></span></div>
+                    <div class="key-row"><span class="keys"><kbd>Shift</kbd> + <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></span><span>Run <em>(LT)</em></span></div>
+                    <div class="key-row"><span class="keys"><kbd>O</kbd></span><span>Apron / enter or exit ring, pick up (hold) <em>(LB)</em></span></div>
+                    <div class="key-row"><span class="keys"><kbd>C</kbd></span><span>Target another opponent <em>(LS click)</em></span></div>
 
                     <h3>Attack</h3>
-                    <div class="key-row"><span class="keys"><kbd>J</kbd> <span class="or">or</span> <kbd>X</kbd></span><span>Strike; hold: strong strike <em>(X)</em></span></div>
-                    <div class="key-row"><span class="keys"><kbd>Space</kbd> <span class="or">or</span> <kbd>K</kbd></span><span>Grapple <em>(A)</em></span></div>
-                    <div class="key-row"><span class="keys"><kbd>L</kbd> <span class="or">or</span> <kbd>Backspace</kbd></span><span>Irish whip / Pin <em>(B)</em></span></div>
-                    <div class="key-row"><span class="keys"><kbd>I</kbd> <span class="or">or</span> <kbd>U</kbd></span><span>Signature / Finisher <em>(Y)</em></span></div>
-                    <div class="key-row"><span class="keys"><kbd>T</kbd><kbd>G</kbd><kbd>V</kbd><kbd>B</kbd>, <kbd>Num 8 2 4 6</kbd> <span class="or">or</span> <kbd>Mouse</kbd></span><span>Change grapple hold, reposition <em>(RS up, down, left, right)</em></span></div>
-                    <div class="key-row"><span class="keys"><kbd>P</kbd></span><span>Right stick click <em>(RS click)</em></span></div>
-                    <div class="key-row"><span class="keys"><kbd>Q</kbd> <span class="or">or</span> <kbd>C</kbd></span><span>Pick up objects; with RS keys: limb target <em>(LB)</em></span></div>
+                    <div class="key-row"><span class="keys"><kbd>J</kbd></span><span>Strike; hold: strong strike <em>(X)</em></span></div>
+                    <div class="key-row"><span class="keys"><kbd>L</kbd></span><span>Grapple <em>(A)</em></span></div>
+                    <div class="key-row"><span class="keys"><kbd>K</kbd></span><span>Irish whip / Pin <em>(B)</em></span></div>
+                    <div class="key-row"><span class="keys"><kbd>Space</kbd></span><span>Signature / Finisher <em>(Y)</em></span></div>
+                    <div class="key-row"><span class="keys"><kbd>T</kbd><kbd>G</kbd><kbd>F</kbd><kbd>H</kbd>, <kbd>Num 8 2 4 6</kbd> <span class="or">or</span> <kbd>Mouse</kbd></span><span>Change grapple hold, reposition <em>(RS up, down, left, right)</em></span></div>
+                    <div class="key-row"><span class="keys"><kbd>V</kbd></span><span>Right stick click <em>(RS click)</em></span></div>
+                    <div class="key-row"><span class="keys"><kbd>U</kbd></span><span>Pick up objects; with RS keys: limb target <em>(RB)</em></span></div>
 
                     <h3>Defense &amp; extras</h3>
-                    <div class="key-row"><span class="keys"><kbd>F</kbd> <span class="or">or</span> <kbd>Ctrl</kbd></span><span>Reverse / block <em>(RT)</em></span></div>
+                    <div class="key-row"><span class="keys"><kbd>I</kbd></span><span>Reverse / block <em>(RT)</em></span></div>
                     <div class="key-row"><span class="keys"><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd><kbd>4</kbd> <span class="or">or</span> <kbd>Arrows</kbd></span><span>Taunts <em>(D-pad up, down, left, right)</em></span></div>
-                    <div class="key-row"><span class="keys"><kbd>Enter</kbd> <span class="or">or</span> <kbd>Esc</kbd></span><span>Pause <em>(Start; in menus Enter also confirms, Esc goes back)</em></span></div>
-                    <div class="key-row"><span class="keys"><kbd>M</kbd> <span class="or">or</span> <kbd>Backspace</kbd></span><span>Help menu <em>(Back)</em></span></div>
+                    <div class="key-row"><span class="keys"><kbd>Esc</kbd></span><span>Pause <em>(Start)</em></span></div>
+                    <div class="key-row"><span class="keys"><kbd>Tab</kbd></span><span>Help menu <em>(Back)</em></span></div>
 
                     <h3>Mouse (menus)</h3>
                     <div class="key-row"><span class="keys"><kbd>Point</kbd></span><span>Select the item, wrestler or tab under the cursor</span></div>
@@ -417,6 +447,7 @@
         </div>
     </div>
 
+    <script src="i18n.js"></script>
     <script src="launcher.js"></script>
 </body>
 </html>

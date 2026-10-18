@@ -1,0 +1,44 @@
+From afc682a9df7fd2d6d51ce700e61e7dc99d7ad3cc Mon Sep 17 00:00:00 2001
+From: Banshee
+Date: Sun, 18 Oct 2026 06:18:33 +0200
+Subject: [PATCH] xam: XGetLanguage returns the user_language setting
+
+---
+ src/kernel/xam/xam_info.cpp | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/src/kernel/xam/xam_info.cpp b/src/kernel/xam/xam_info.cpp
+index dfa60b6..3eeb169 100644
+--- a/src/kernel/xam/xam_info.cpp
++++ b/src/kernel/xam/xam_info.cpp
+@@ -9,6 +9,7 @@
+  * @modified    Tom Clay, 2026 - Adapted for ReXGlue runtime
+  */
+ 
++#include <rex/cvar.h>
+ #include <rex/kernel/xam/module.h>
+ #include <rex/kernel/xam/private.h>
+ #include <rex/logging.h>
+@@ -28,6 +29,8 @@
+ #include <fmt/format.h>
+ #include <fmt/xchar.h>
+ 
++REXCVAR_DECLARE(uint32_t, user_language);
++
+ namespace rex {
+ namespace kernel {
+ namespace xam {
+@@ -189,6 +192,10 @@ ppc_u32_result_t XGetGameRegion_entry() {
+ }
+ 
+ ppc_u32_result_t XGetLanguage_entry() {
++  const uint32_t user_language = REXCVAR_GET(user_language);
++  if (user_language >= 1 && user_language <= 12) {
++    return user_language;
++  }
+   auto desired_language = XLanguage::kEnglish;
+ 
+   // Switch the language based on game region.
+-- 
+2.56.0.windows.2
+

@@ -229,11 +229,11 @@ public static class LogoStore
             message = ids.Count == 1 ? "That logo is already in your library." : "Those logos are already in your library.";
             return null;
         }
-        message = $"{Logos(newInLibrary)} added to the library{from}";
-        if (added > 0) message += $", {added} put in the game";
-        if (!hasSave) message += ". The game has no logo save yet: save a logo once in the Paint Tool, then pick them in the Library";
-        else if (added < ids.Count && PutInGameFull(paths)) message += ". The game is full (20): pick which ones to use in the Library";
-        message += ".";
+        // Separate sentences, so the launcher page can translate each one.
+        message = $"{Logos(newInLibrary)} added to the library{from}.";
+        if (added > 0) message += $" {added} put in the game.";
+        if (!hasSave) message += " The game has no logo save yet: save a logo once in the Paint Tool, then pick them in the Library.";
+        else if (added < ids.Count && PutInGameFull(paths)) message += " The game is full (20): pick which ones to use in the Library.";
         return null;
     }
 

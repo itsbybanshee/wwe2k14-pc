@@ -15,6 +15,12 @@ public sealed class LauncherSettings
     public bool Shadows { get; set; } = true;
     public bool FpsCounter { get; set; } = false;
     public string Anisotropic { get; set; } = "4x";
+    // Game text language, passed to the game as the console language (the languages the game has text for).
+    public string Language { get; set; } = "english";
+    // Button mapper (Controls > Custom). Keyboard: binding name (a, left_trigger, dpad_up...) -> comma-separated keys,
+    // only the ones changed from the defaults. Controller: button -> button it acts as (A -> B).
+    public Dictionary<string, string> KeyBinds { get; set; } = new();
+    public Dictionary<string, string> PadMap { get; set; } = new();
     public string AntiAliasing { get; set; } = "fxaa";
     public string Upscaler { get; set; } = "off";
     // Play with the installed title update (wwe2k14_tu.exe) instead of the vanilla game.
@@ -25,6 +31,11 @@ public sealed class LauncherSettings
     [JsonIgnore] public static readonly string[] Resolutions = ["720", "1080", "1440", "2160"];
     [JsonIgnore] public static readonly string[] WindowModeOptions = ["windowed", "borderless", "fullscreen"];
     [JsonIgnore] public static readonly string[] AnisoOptions = ["off", "4x", "16x"];
+    // Xbox 360 language ids.
+    [JsonIgnore] public static readonly Dictionary<string, int> LanguageIds = new()
+    {
+        ["english"] = 1, ["german"] = 3, ["french"] = 4, ["spanish"] = 5, ["italian"] = 6,
+    };
     [JsonIgnore] public static readonly string[] AaOptions = ["off", "fxaa", "extreme", "max"];
     [JsonIgnore] public static readonly string[] UpscalerOptions = ["off", "fsr"];
 
@@ -40,6 +51,7 @@ public sealed class LauncherSettings
                 else if (!WindowModeOptions.Contains(s.WindowMode.ToLowerInvariant())) s.WindowMode = "borderless";
                 s.Fullscreen = s.WindowMode == "fullscreen";
                 if (!AnisoOptions.Contains((s.Anisotropic ?? "").ToLowerInvariant())) s.Anisotropic = "4x";
+                if (!LanguageIds.ContainsKey((s.Language ?? "").ToLowerInvariant())) s.Language = "english";
                 if (!AaOptions.Contains((s.AntiAliasing ?? "").ToLowerInvariant())) s.AntiAliasing = "fxaa";
                 if (!UpscalerOptions.Contains((s.Upscaler ?? "").ToLowerInvariant())) s.Upscaler = "off";
                 return s;

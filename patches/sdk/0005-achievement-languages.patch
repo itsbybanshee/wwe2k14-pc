@@ -1,0 +1,72 @@
+From 64eee754db6d43f904992706314eecbd08162ef9 Mon Sep 17 00:00:00 2001
+From: Banshee
+Date: Sun, 18 Oct 2026 06:51:31 +0200
+Subject: [PATCH] xam: achievement text in the chosen language, all languages
+ in the summary
+
+---
+ src/kernel/xam/achievements.cpp | 27 +++++++++++++++++++++++++--
+ 1 file changed, 25 insertions(+), 2 deletions(-)
+
+diff --git a/src/kernel/xam/achievements.cpp b/src/kernel/xam/achievements.cpp
+index 9314b38..1989878 100644
+--- a/src/kernel/xam/achievements.cpp
++++ b/src/kernel/xam/achievements.cpp
+@@ -10,6 +10,10 @@
+ #include <vector>
+ 
+ #include <fmt/format.h>
++
++#include <rex/cvar.h>
++
++REXCVAR_DECLARE(uint32_t, user_language);
+ #include <rex/filesystem.h>
+ #include <rex/logging.h>
+ #include <rex/runtime.h>
+@@ -94,7 +98,8 @@ std::vector<AchievementInfo> ReadTitleAchievements() {
+   const util::XdbfGameData db = kernel->title_xdbf();
+   if (!db.is_valid())
+     return list;
+-  const XLanguage language = db.GetExistingLanguage(XLanguage::kEnglish);
++  // The console language chosen for the game (user_language), or the title's default if it has no text for it.
++  const XLanguage language = db.GetExistingLanguage(XLanguage(REXCVAR_GET(user_language)));
+   for (const auto& entry : db.GetAchievements()) {
+     list.push_back({uint32_t(entry.id), db.GetStringTableEntry(language, entry.label_id),
+                     db.GetStringTableEntry(language, entry.description_id), uint32_t(entry.gamerscore),
+@@ -160,6 +165,23 @@ void WriteSummaryLocked() {
+     return;
+   const std::string icon_dir = fmt::format("{:08X}", g_title_id);
+   const auto icons = ExtractIcons(folder / icon_dir, list);
++  // Name and description in every language the title has, so the launcher can show its own language.
++  static const std::pair<const char*, XLanguage> kLanguages[] = {
++      {"en", XLanguage::kEnglish}, {"fr", XLanguage::kFrench}, {"de", XLanguage::kGerman},
++      {"it", XLanguage::kItalian}, {"es", XLanguage::kSpanish}};
++  const util::XdbfGameData db = Kernel()->title_xdbf();
++  std::map<uint32_t, std::string> texts;
++  for (const auto& entry : db.GetAchievements()) {
++    std::string text;
++    for (const auto& [code, lang] : kLanguages) {
++      if (db.GetExistingLanguage(lang) != lang)
++        continue;
++      text += fmt::format("{}\"{}\":{{\"name\":{},\"description\":{}}}", text.empty() ? "" : ",", code,
++                          JsonString(db.GetStringTableEntry(lang, entry.label_id)),
++                          JsonString(db.GetStringTableEntry(lang, entry.description_id)));
++    }
++    texts[uint32_t(entry.id)] = text;
++  }
+   std::ostringstream json;
+   json << "{\"titleId\":\"" << fmt::format("{:08X}", g_title_id) << "\",\"achievements\":[";
+   for (size_t i = 0; i < list.size(); ++i) {
+@@ -170,7 +192,8 @@ void WriteSummaryLocked() {
+                                   ? 0
+                                   : (long long)((it->second - 116444736000000000ull) / 10000);
+     json << (i ? "," : "") << "{\"id\":" << a.id << ",\"name\":" << JsonString(a.name)
+-         << ",\"description\":" << JsonString(a.description) << ",\"gamerscore\":" << a.gamerscore
++         << ",\"description\":" << JsonString(a.description) << ",\"text\":{" << texts[a.id] << "}"
++         << ",\"gamerscore\":" << a.gamerscore
+          << ",\"unlocked\":" << (it != g_unlocked.end() ? "true" : "false") << ",\"unlockedAt\":" << unix_ms
+          << ",\"image\":"
+          << (icons.count(a.image_id) ? JsonString(fmt::format("{}/{}.png", icon_dir, a.image_id)) : "null")
+-- 
+2.56.0.windows.2
+

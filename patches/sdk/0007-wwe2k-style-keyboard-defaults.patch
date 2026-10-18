@@ -1,0 +1,66 @@
+From f4468b91a44ca53dce7dc64ecc8b28ea3007c4eb Mon Sep 17 00:00:00 2001
+From: Banshee
+Date: Sun, 18 Oct 2026 07:29:42 +0200
+Subject: [PATCH] input: default keyboard layout in the style of current WWE 2K
+ PC games
+
+---
+ src/input/mnk/mnk_input_driver.cpp | 36 +++++++++++++++---------------
+ 1 file changed, 18 insertions(+), 18 deletions(-)
+
+diff --git a/src/input/mnk/mnk_input_driver.cpp b/src/input/mnk/mnk_input_driver.cpp
+index e79c821..2f9075b 100644
+--- a/src/input/mnk/mnk_input_driver.cpp
++++ b/src/input/mnk/mnk_input_driver.cpp
+@@ -35,30 +35,30 @@ REXCVAR_DEFINE_INT32(mnk_user_index, 0, "Input", "Controller slot (0-3) for MnK"
+ REXCVAR_DEFINE_DOUBLE(mnk_sensitivity, 1.0, "Input", "Mouse sensitivity for right stick")
+     .range(0.01, 10.0);
+ 
+-REXCVAR_DEFINE_STRING(keybind_a, "Space,K,Return,Numpad1", "Input/Keybinds/Controller", "A button");
+-REXCVAR_DEFINE_STRING(keybind_b, "Backspace,L,Escape,Numpad2", "Input/Keybinds/Controller", "B button");
+-REXCVAR_DEFINE_STRING(keybind_x, "J,X,Numpad4", "Input/Keybinds/Controller", "X button");
+-REXCVAR_DEFINE_STRING(keybind_y, "I,U,Numpad5", "Input/Keybinds/Controller", "Y button");
+-REXCVAR_DEFINE_STRING(keybind_left_trigger, "Shift,Z", "Input/Keybinds/Controller", "Left trigger");
+-REXCVAR_DEFINE_STRING(keybind_right_trigger, "F,Control", "Input/Keybinds/Controller", "Right trigger");
+-REXCVAR_DEFINE_STRING(keybind_left_shoulder, "Q,C", "Input/Keybinds/Controller", "Left shoulder");
+-REXCVAR_DEFINE_STRING(keybind_right_shoulder, "E,R,Tab", "Input/Keybinds/Controller", "Right shoulder");
+-REXCVAR_DEFINE_STRING(keybind_lstick_up, "W,Up", "Input/Keybinds/Controller", "Left stick up");
+-REXCVAR_DEFINE_STRING(keybind_lstick_down, "S,Down", "Input/Keybinds/Controller", "Left stick down");
+-REXCVAR_DEFINE_STRING(keybind_lstick_left, "A,Left", "Input/Keybinds/Controller", "Left stick left");
+-REXCVAR_DEFINE_STRING(keybind_lstick_right, "D,Right", "Input/Keybinds/Controller", "Left stick right");
+-REXCVAR_DEFINE_STRING(keybind_lstick_press, "O", "Input/Keybinds/Controller", "Left stick press");
++REXCVAR_DEFINE_STRING(keybind_a, "L", "Input/Keybinds/Controller", "A button");
++REXCVAR_DEFINE_STRING(keybind_b, "K", "Input/Keybinds/Controller", "B button");
++REXCVAR_DEFINE_STRING(keybind_x, "J", "Input/Keybinds/Controller", "X button");
++REXCVAR_DEFINE_STRING(keybind_y, "Space", "Input/Keybinds/Controller", "Y button");
++REXCVAR_DEFINE_STRING(keybind_left_trigger, "Shift", "Input/Keybinds/Controller", "Left trigger");
++REXCVAR_DEFINE_STRING(keybind_right_trigger, "I", "Input/Keybinds/Controller", "Right trigger");
++REXCVAR_DEFINE_STRING(keybind_left_shoulder, "O", "Input/Keybinds/Controller", "Left shoulder");
++REXCVAR_DEFINE_STRING(keybind_right_shoulder, "U", "Input/Keybinds/Controller", "Right shoulder");
++REXCVAR_DEFINE_STRING(keybind_lstick_up, "W", "Input/Keybinds/Controller", "Left stick up");
++REXCVAR_DEFINE_STRING(keybind_lstick_down, "S", "Input/Keybinds/Controller", "Left stick down");
++REXCVAR_DEFINE_STRING(keybind_lstick_left, "A", "Input/Keybinds/Controller", "Left stick left");
++REXCVAR_DEFINE_STRING(keybind_lstick_right, "D", "Input/Keybinds/Controller", "Left stick right");
++REXCVAR_DEFINE_STRING(keybind_lstick_press, "C", "Input/Keybinds/Controller", "Left stick press");
+ REXCVAR_DEFINE_STRING(keybind_rstick_up, "Numpad8,T", "Input/Keybinds/Controller", "Right stick up");
+ REXCVAR_DEFINE_STRING(keybind_rstick_down, "Numpad2,G", "Input/Keybinds/Controller", "Right stick down");
+-REXCVAR_DEFINE_STRING(keybind_rstick_left, "Numpad4,V", "Input/Keybinds/Controller", "Right stick left");
+-REXCVAR_DEFINE_STRING(keybind_rstick_right, "Numpad6,B", "Input/Keybinds/Controller", "Right stick right");
+-REXCVAR_DEFINE_STRING(keybind_rstick_press, "P", "Input/Keybinds/Controller", "Right stick press");
++REXCVAR_DEFINE_STRING(keybind_rstick_left, "Numpad4,F", "Input/Keybinds/Controller", "Right stick left");
++REXCVAR_DEFINE_STRING(keybind_rstick_right, "Numpad6,H", "Input/Keybinds/Controller", "Right stick right");
++REXCVAR_DEFINE_STRING(keybind_rstick_press, "V", "Input/Keybinds/Controller", "Right stick press");
+ REXCVAR_DEFINE_STRING(keybind_dpad_up, "Up,1", "Input/Keybinds/Controller", "D-pad up");
+ REXCVAR_DEFINE_STRING(keybind_dpad_down, "Down,2", "Input/Keybinds/Controller", "D-pad down");
+ REXCVAR_DEFINE_STRING(keybind_dpad_left, "Left,3", "Input/Keybinds/Controller", "D-pad left");
+ REXCVAR_DEFINE_STRING(keybind_dpad_right, "Right,4", "Input/Keybinds/Controller", "D-pad right");
+-REXCVAR_DEFINE_STRING(keybind_back, "Tab,Backspace,M", "Input/Keybinds/Controller", "Back button");
+-REXCVAR_DEFINE_STRING(keybind_start, "Return,Escape", "Input/Keybinds/Controller", "Start button");
++REXCVAR_DEFINE_STRING(keybind_back, "Tab", "Input/Keybinds/Controller", "Back button");
++REXCVAR_DEFINE_STRING(keybind_start, "Escape", "Input/Keybinds/Controller", "Start button");
+ REXCVAR_DEFINE_STRING(keybind_guide, "", "Input/Keybinds/Controller", "Guide button");
+ 
+ namespace rex::input::mnk {
+-- 
+2.56.0.windows.2
+

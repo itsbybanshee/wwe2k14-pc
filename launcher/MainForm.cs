@@ -252,6 +252,12 @@ public sealed class MainForm : Form
             case "deleteLibraryLogo":
                 DeleteLibraryLogo((string?)msg!["id"]);
                 break;
+            case "exportControls":
+                ExportControls(msg!["scheme"]);
+                break;
+            case "importControls":
+                ImportControls();
+                break;
             case "removeLogo":
                 RemoveLogo((int?)msg!["slot"]);
                 break;
@@ -286,6 +292,7 @@ public sealed class MainForm : Form
         if (s is null) return;
         if (!LauncherSettings.Resolutions.Contains(s.Resolution)) s.Resolution = "720";
         if (!LauncherSettings.AnisoOptions.Contains((s.Anisotropic ?? "").ToLowerInvariant())) s.Anisotropic = "16x";
+        if (!LauncherSettings.LanguageIds.ContainsKey((s.Language ?? "").ToLowerInvariant())) s.Language = "english";
         if (!LauncherSettings.AaOptions.Contains((s.AntiAliasing ?? "").ToLowerInvariant())) s.AntiAliasing = "fxaa";
         if (!LauncherSettings.UpscalerOptions.Contains((s.Upscaler ?? "").ToLowerInvariant())) s.Upscaler = "off";
         if (string.IsNullOrWhiteSpace(s.WindowMode)) s.WindowMode = s.Fullscreen ? "fullscreen" : "borderless";
@@ -355,7 +362,7 @@ public sealed class MainForm : Form
     {
         using var dialog = new OpenFileDialog
         {
-            Title = "Choose your WWE 2K14 disc image",
+            Title = DialogText.Get(_settings.Language, "Choose your WWE 2K14 disc image"),
             Filter = "Xbox 360 disc image (*.iso)|*.iso|All files|*.*",
             InitialDirectory = IsDiscImage(_settings.GameFolder) ? Path.GetDirectoryName(_settings.GameFolder) ?? "" : "",
         };
@@ -371,7 +378,7 @@ public sealed class MainForm : Form
     {
         using var dialog = new FolderBrowserDialog
         {
-            Description = "Choose the folder of your extracted WWE 2K14 disc (the one containing default.xex)",
+            Description = DialogText.Get(_settings.Language, "Choose the folder of your extracted WWE 2K14 disc (the one containing default.xex)"),
             UseDescriptionForTitle = true,
             InitialDirectory = Directory.Exists(_settings.GameFolder) ? _settings.GameFolder : "",
         };
@@ -501,6 +508,19 @@ public sealed class MainForm : Form
             _ => 5
         };
         info.ArgumentList.Add($"--anisotropic_override={anisoVal}");
+        info.ArgumentList.Add($"--user_language={LauncherSettings.LanguageIds.GetValueOrDefault((_settings.Language ?? "").ToLowerInvariant(), 1)}");
+        // Button mapper: keyboard bindings and controller remap (SDK keybind_* and pad_remap settings).
+        foreach (var (bind, keys) in _settings.KeyBinds ?? new())
+        {
+            if (System.Text.RegularExpressions.Regex.IsMatch(bind, "^[a-z_]+$") &&
+                System.Text.RegularExpressions.Regex.IsMatch(keys ?? "", "^[A-Za-z0-9,]+$"))
+                info.ArgumentList.Add($"--keybind_{bind}={keys}");
+        }
+        string[] padNames = ["A", "B", "X", "Y", "LB", "RB", "LT", "RT", "START", "BACK", "LS", "RS", "UP", "DOWN", "LEFT", "RIGHT"];
+        var pairs = (_settings.PadMap ?? new())
+            .Where(p => padNames.Contains(p.Key) && padNames.Contains(p.Value) && p.Key != p.Value)
+            .Select(p => $"{p.Key}={p.Value}").ToList();
+        if (pairs.Count > 0) info.ArgumentList.Add($"--pad_remap={string.Join(",", pairs)}");
         info.Environment["WWE2K14_ANISO"] = anisoVal.ToString();
 
         string aaVal = (_settings.AntiAliasing ?? "fxaa").ToLowerInvariant() switch
@@ -560,7 +580,7 @@ public sealed class MainForm : Form
     {
         using var dialog = new OpenFileDialog
         {
-            Title = "Add WWE 2K14 DLC packages",
+            Title = DialogText.Get(_settings.Language, "Add WWE 2K14 DLC packages"),
             Multiselect = true,
             Filter = "Xbox 360 packages (no extension, .bin, .stfs)|*.*",
         };
@@ -572,7 +592,7 @@ public sealed class MainForm : Form
     {
         using var dialog = new FolderBrowserDialog
         {
-            Description = "Choose a folder with WWE 2K14 DLC packages (subfolders are searched too)",
+            Description = DialogText.Get(_settings.Language, "Choose a folder with WWE 2K14 DLC packages (subfolders are searched too)"),
             UseDescriptionForTitle = true,
         };
         if (dialog.ShowDialog(this) != DialogResult.OK) return;
@@ -663,7 +683,7 @@ public sealed class MainForm : Form
         if (_game is { HasExited: false }) { Toast("Close the game before installing the title update.", true); return; }
         using var dialog = new OpenFileDialog
         {
-            Title = "Choose the WWE 2K14 title update file (e.g. tu00000002_00000000)",
+            Title = DialogText.Get(_settings.Language, "Choose the WWE 2K14 title update file (e.g. tu00000002_00000000)"),
             Filter = "Xbox 360 title update (tu*)|tu*|All files|*.*",
         };
         if (dialog.ShowDialog(this) != DialogResult.OK) return;
@@ -759,7 +779,7 @@ public sealed class MainForm : Form
         if (_game is { HasExited: false }) { Toast("Close the game before changing logos.", true); return; }
         using var dialog = new OpenFileDialog
         {
-            Title = "Add custom logos",
+            Title = DialogText.Get(_settings.Language, "Add custom logos"),
             Multiselect = true,
             Filter = "Images (*.png;*.jpg;*.jpeg;*.bmp;*.gif)|*.png;*.jpg;*.jpeg;*.bmp;*.gif",
         };
@@ -774,7 +794,7 @@ public sealed class MainForm : Form
         if (_game is { HasExited: false }) { Toast("Close the game before changing logos.", true); return; }
         using var dialog = new OpenFileDialog
         {
-            Title = "Import logos from a WWE 2K14 PS3 save (its LOGOS.DAT, or a .zip / .rar of the save)",
+            Title = DialogText.Get(_settings.Language, "Import logos from a WWE 2K14 PS3 save (its LOGOS.DAT, or a .zip / .rar of the save)"),
             Filter = "PS3 save (LOGOS.DAT, .zip, .rar)|LOGOS.DAT;*.zip;*.rar|All files|*.*",
         };
         if (dialog.ShowDialog(this) != DialogResult.OK) return;
@@ -829,7 +849,7 @@ public sealed class MainForm : Form
     {
         using var dialog = new OpenFileDialog
         {
-            Title = "Add songs to the WWE 2K14 custom soundtrack",
+            Title = DialogText.Get(_settings.Language, "Add songs to the WWE 2K14 custom soundtrack"),
             Multiselect = true,
             Filter = "Music (*.mp3;*.flac;*.wav;*.ogg)|*.mp3;*.flac;*.wav;*.ogg",
         };
@@ -866,7 +886,7 @@ public sealed class MainForm : Form
         if (_game is { HasExited: false }) { Toast("Close the game before installing mods.", true); return; }
         using var dialog = new OpenFileDialog
         {
-            Title = "Select mod package (.zip) or asset files (.pac, .bik)",
+            Title = DialogText.Get(_settings.Language, "Select mod package (.zip) or asset files (.pac, .bik)"),
             Multiselect = true,
             Filter = "Mod packages (*.zip;*.pac;*.bik)|*.zip;*.pac;*.bik|All files (*.*)|*.*",
         };
@@ -933,7 +953,7 @@ public sealed class MainForm : Form
         if (_game is { HasExited: false }) { Toast("Close the game before installing mods.", true); return; }
         using var dialog = new FolderBrowserDialog
         {
-            Description = "Select an extracted mod folder (containing pac, stream, or asset files)",
+            Description = DialogText.Get(_settings.Language, "Select an extracted mod folder (containing pac, stream, or asset files)"),
             UseDescriptionForTitle = true,
         };
         if (dialog.ShowDialog(this) != DialogResult.OK) return;
@@ -970,7 +990,7 @@ public sealed class MainForm : Form
 
         using var dialog = new FolderBrowserDialog
         {
-            Description = "Select your Total Conversion mod folder (e.g. Wrestling Legends 1.1)",
+            Description = DialogText.Get(_settings.Language, "Select your Total Conversion mod folder (e.g. Wrestling Legends 1.1)"),
             UseDescriptionForTitle = true,
         };
         if (dialog.ShowDialog(this) != DialogResult.OK) return;
@@ -1102,6 +1122,71 @@ public sealed class MainForm : Form
     // --- Helpers ------------------------------------------------------------------------------------------------------
 
     void Toast(string message, bool error = false) => Post(new { type = "toast", message, error });
+
+    // --- Control schemes (Controls > Custom): a JSON file with the controller remap and the keyboard keys ---------------
+
+    static readonly string[] PadButtonNames = ["A", "B", "X", "Y", "LB", "RB", "LT", "RT", "START", "BACK", "LS", "RS", "UP", "DOWN", "LEFT", "RIGHT"];
+
+    // Only known buttons and plain key lists, so a shared file cannot slip anything else onto the game's command line.
+    static (Dictionary<string, string> Pad, Dictionary<string, string> Keys)? ReadScheme(JsonNode? scheme)
+    {
+        if (scheme is not JsonObject obj) return null;
+        var pad = new Dictionary<string, string>();
+        var keys = new Dictionary<string, string>();
+        if (obj["padMap"] is JsonObject padMap)
+            foreach (var (from, to) in padMap)
+                if (PadButtonNames.Contains(from) && to?.GetValueKind() == JsonValueKind.String && PadButtonNames.Contains((string)to!))
+                    pad[from] = (string)to!;
+        if (obj["keyBinds"] is JsonObject keyBinds)
+            foreach (var (bind, value) in keyBinds)
+                if (System.Text.RegularExpressions.Regex.IsMatch(bind, "^[a-z_]{1,32}$") && value?.GetValueKind() == JsonValueKind.String &&
+                    System.Text.RegularExpressions.Regex.IsMatch((string)value!, "^[A-Za-z0-9,]{1,80}$"))
+                    keys[bind] = (string)value!;
+        return (pad, keys);
+    }
+
+    void ExportControls(JsonNode? scheme)
+    {
+        var read = ReadScheme(scheme);
+        if (read is null) return;
+        using var dialog = new SaveFileDialog
+        {
+            Title = DialogText.Get(_settings.Language, "Export control scheme"),
+            Filter = "Control scheme (*.json)|*.json",
+            FileName = "WWE 2K14 controls.json",
+        };
+        if (dialog.ShowDialog(this) != DialogResult.OK) return;
+        var file = new { game = "WWE 2K14 PC", type = "controls", padMap = read.Value.Pad, keyBinds = read.Value.Keys };
+        try
+        {
+            File.WriteAllText(dialog.FileName, JsonSerializer.Serialize(file, new JsonSerializerOptions { WriteIndented = true }));
+            Toast("Control scheme exported.");
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            Toast($"Could not save the file: {ex.Message}", true);
+        }
+    }
+
+    void ImportControls()
+    {
+        using var dialog = new OpenFileDialog
+        {
+            Title = DialogText.Get(_settings.Language, "Import control scheme"),
+            Filter = "Control scheme (*.json)|*.json|All files|*.*",
+        };
+        if (dialog.ShowDialog(this) != DialogResult.OK) return;
+        JsonNode? node = null;
+        try { node = JsonNode.Parse(File.ReadAllText(dialog.FileName)); }
+        catch (Exception ex) when (ex is IOException or JsonException or UnauthorizedAccessException) { }
+        var read = node?["type"]?.GetValue<string>() == "controls" ? ReadScheme(node) : null;
+        if (read is null)
+        {
+            Toast("That file is not a control scheme.", true);
+            return;
+        }
+        Post(new { type = "controlsImported", padMap = read.Value.Pad, keyBinds = read.Value.Keys });
+    }
 
     void Post(object message)
     {
