@@ -1,4 +1,4 @@
-# WWE 2K14 PC Recomp (By Banshee) v.1.1
+# WWE 2K14 PC Recomp (By Banshee) v1.1
 
 WWE 2K14 PC recompilation with a launcher that adds modern graphics options, mods, custom logos, your own music and more.
 
