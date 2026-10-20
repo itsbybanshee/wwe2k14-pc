@@ -5,6 +5,12 @@ WWE 2K14 PC recompilation with a launcher that adds modern graphics options, mod
 - No game data included. You need your own legally acquired WWE 2K14 (Xbox 360) files: a disc image (`.iso`) or the
   extracted game folder.
 
+## Socials
+
+If you want to support me, here's my [Patreon](https://www.patreon.com/c/Banshee734).
+
+To keep up with updates, follow me on [Twitter](https://x.com/itsbybanshee).
+
 ## What's new in v1.1
 
 - 🌍 **Languages**: supported EN/FR/DE/IT/SP. Game text, achievements & launcher switch with one click
