@@ -13,7 +13,7 @@ To keep up with updates, follow me on [Twitter](https://x.com/itsbybanshee).
 
 ## What's new in v1.2.0
 
-- 💃 **Divas Evolution**: one-click install of the Divas Evolution mod, with its own build of the game for the mod's code changes
+- 💃 **Divas Evolution**: one-click total conversion install of the Divas Evolution mod
 - 🔄 **Launcher updates**: the launcher flags new releases and downloads and installs them for you
 - 🏷️ **Build number**: the launcher shows its version next to the PC tag
 - 🎨 **New look**: new icon and red accent color across the launcher
