@@ -1,0 +1,37 @@
+# Divas Evolution v1.0.0 (wwe2k14_divas.exe): the mod's new code and the rebuilt copies of the functions
+# it patches with trampolines. Written by tools/prepare_divas.py, which also writes the matching
+# game_divas/default.xex; regenerate both together.
+
+[functions]
+
+# New code of the mod, in the gap after RADCODE (prepare_divas.py grows the section over it).
+0x835C3500 = { name = "divas_835C3500", size = 0xB4 }  # both objects pass the same vtable+0x80 check (0x825A0B50)
+0x835C3900 = { name = "divas_835C3900", size = 0xF0 }  # scans the 9 slots at 0x836F38D0 for a match against r3
+0x835C39F0 = { name = "divas_835C39F0", size = 0x60 }  # 0..99 value from the byte table at 0x820796D8, two alternating counters
+0x835C3A50 = { name = "divas_835C3A50", size = 0x88 }  # adjusts r4 (1..99) before tail-calling 0x82464880
+0x835C3AD8 = { name = "divas_835C3AD8", size = 0x74 }  # sets +0x959 on a wrestler after a roll
+0x835C3B4C = { name = "divas_835C3B4C", size = 0x68 }  # sets +0x959 on a wrestler after a roll
+0x835C3D00 = { name = "divas_835C3D00", size = 0x9C }  # flags (+0x10 = 1) 16 match/move ids
+0x835C3D9C = { name = "divas_835C3D9C", size = 0x58 }  # runs 0x835C3D00 over the 400-entry table at *0x837733C0
+0x835C3DF4 = { name = "divas_835C3DF4", size = 0x58 }  # wraps 0x827D8EF0, then flags entry r3 of that table
+0x835C3E4C = { name = "divas_835C3E4C", size = 0x2C }  # wraps 0x827D8E30, then flags the whole table
+0x835C3F00 = { name = "divas_835C3F00", size = 0x5C }  # after 0x835C4300: registers entry 0x12A when a file exists
+0x835C3F5C = { name = "divas_835C3F5C", size = 0xAC }  # finds or adds entry 0x12A in a 200-slot list (+0x44C0 count)
+0x835C4008 = { name = "divas_835C4008", size = 0x3C }  # id 0x1766 lookup with a fallback record (0x835C4080)
+0x835C4044 = { name = "divas_835C4044", size = 0x3C }  # wrapper around 0x82C384C0 for id 0x1766 (0xFF -> 0)
+0x835C4300 = { name = "divas_835C4300", size = 0x10C }  # loads extra 'COSX' records into the 200-slot list
+0x835C4500 = { name = "divas_835C4500", size = 0x3C }  # calls 0x822C1CF0 unless 0x822C0CA8 says so
+0x835C4600 = { name = "divas_835C4600", size = 0xC }  # returns the 2-entry table at 0x835C4610 in r5
+0x835C4874 = { name = "divas_835C4874", size = 0x28 }  # picks r8 = 0x22 once after the 0x5EED marker
+0x835C489C = { name = "divas_835C489C", size = 0x28 }  # picks r11 = 0x22 once after the 0x5EED marker
+0x82C38648 = { size = 0x4 }  # thunk, now b 0x835C4008
+
+# Functions with trampolines, rebuilt in one piece (the original entry jumps here).
+0x835C5000 = { name = "divas_822BCFB8", size = 0x1394 }  # 0x822BCFB8, trampolines at 822BD028
+0x835C63A0 = { name = "divas_824192C8", size = 0x360 }  # 0x824192C8, trampolines at 82419380, 824193F8
+0x835C6700 = { name = "divas_8261EB60", size = 0x418 }  # 0x8261EB60, trampolines at 8261EE9C
+0x835C6B20 = { name = "divas_82818688", size = 0xC4 }  # 0x82818688, trampolines at 828186DC
+0x835C6BF0 = { name = "divas_8281F150", size = 0x614 }  # 0x8281F150, trampolines at 8281F370
+0x835C7210 = { name = "divas_82820090", size = 0xF0 }  # 0x82820090, trampolines at 82820128
+0x835C7300 = { name = "divas_82918E10", size = 0x1250 }  # 0x82918E10, trampolines at 82919924
+0x835C8550 = { name = "divas_82C384C0_original", size = 0xC8 }  # 0x82C384C0 before the mod's hook (wrapper 0x835C4044)

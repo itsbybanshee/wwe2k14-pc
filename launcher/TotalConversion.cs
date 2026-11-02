@@ -128,7 +128,9 @@ public sealed class TotalConversion
 
         var summary = new StringBuilder("Total Conversion installed!");
         if (gameFolder != null)
-            summary.Append($" Configured game folder & Title Update.");
+            summary.Append(DivasEvolution.IsGameFolder(gameFolder)
+                ? " Configured game folder (Divas Evolution, its own build of the game)."
+                : " Configured game folder & Title Update.");
         if (dlcInstalled > 0)
             summary.Append($" Installed {dlcInstalled} DLCs.");
         if (savesInstalled > 0)

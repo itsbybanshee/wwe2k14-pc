@@ -12,7 +12,7 @@ public static class Win {
   public struct RECT { public int Left, Top, Right, Bottom; }
 }
 "@
-$p = Get-Process wwe2k14_tu, wwe2k14 -ErrorAction SilentlyContinue | Where-Object { $_.MainWindowHandle -ne 0 } | Select-Object -First 1
+$p = Get-Process wwe2k14_divas, wwe2k14_tu, wwe2k14 -ErrorAction SilentlyContinue | Where-Object { $_.MainWindowHandle -ne 0 } | Select-Object -First 1
 if (-not $p) { throw "game window not found" }
 $r = New-Object Win+RECT
 [Win]::GetClientRect($p.MainWindowHandle, [ref]$r) | Out-Null

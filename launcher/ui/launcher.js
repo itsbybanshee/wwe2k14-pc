@@ -551,7 +551,28 @@ function renderSettings() {
 }
 
 // Optional title update: Vanilla always works; "Updated" once a TU file is installed and its exe is built.
+// A Divas Evolution game folder plays with its own exe instead (DivasEvolution.cs): no version choice, only its build.
 function renderTitleUpdate() {
+    const divas = state.divas || {};
+    if (divas.active) {
+        document.querySelectorAll('#version-group .segment').forEach(button => {
+            button.setAttribute('aria-checked', 'false');
+            button.tabIndex = -1;
+            button.disabled = true;
+            button.title = 'Divas Evolution plays with its own build of the game.';
+        });
+        const action = document.getElementById('tu-action');
+        action.disabled = state.running || divas.building || divas.built || Boolean(state.tc?.busy);
+        document.getElementById('tu-action-label').textContent =
+            divas.building ? 'Building...' : !divas.built ? 'Build Divas' : 'Divas Evolution';
+        action.title = divas.building
+            ? 'Building Divas Evolution in the console window. This takes a while; the launcher updates when it is done.'
+            : !divas.built ? 'Divas Evolution changes the game code. Build it once to play it.'
+            : 'Playing Divas Evolution.';
+        return;
+    }
+    document.querySelector('#version-group [data-version="vanilla"]').disabled = false;
+    document.querySelector('#version-group [data-version="vanilla"]').title = '';
     const tu = state.tu || {};
     const ready = tu.installed && tu.built;
     const useTu = settings.useTitleUpdate && ready;
@@ -601,8 +622,11 @@ function renderTotalConversion() {
 function renderPlay() {
     elements.play.classList.toggle('is-running', state.running);
     elements.playLabel.textContent = state.running ? 'Running' : 'Play';
+    // state.exe is the exe Play will start: wwe2k14_divas.exe for a Divas Evolution game folder.
     elements.play.disabled = state.running || !state.game.ok || !state.exe.ok;
-    elements.play.title = !state.exe.ok ? 'wwe2k14.exe was not found. Build the game first.'
+    elements.play.title = !state.exe.ok
+        ? (state.divas?.active ? 'wwe2k14_divas.exe was not found. Build Divas Evolution first.'
+            : 'wwe2k14.exe was not found. Build the game first.')
         : !state.game.ok ? state.game.message : '';
     elements.dlcButtons.forEach(button => {
         if (button) button.disabled = state.running;
@@ -838,6 +862,10 @@ document.querySelectorAll('#version-group .segment').forEach(button => {
     });
 });
 document.getElementById('tu-action').addEventListener('click', () => {
+    if (state.divas?.active) {
+        if (!state.divas.built) send('buildDivas');
+        return;
+    }
     const tu = state.tu || {};
     send(!tu.installed ? 'installTu' : !tu.built ? 'buildTu' : 'removeTu');
 });
@@ -1025,8 +1053,70 @@ document.querySelectorAll('[data-folder]').forEach(button => {
 elements.play.addEventListener('click', () => send('play', { settings }));
 // Social links open in the default browser (the launcher itself never navigates away).
 document.querySelectorAll('.social-link').forEach(link => {
-    link.addEventListener('click', () => send('openUrl', { url: link.dataset.url }));
+    if (link.dataset.url) link.addEventListener('click', () => send('openUrl', { url: link.dataset.url }));
 });
+
+// Launcher updates (AppUpdater.cs): the Updates button checks the latest GitHub release; a newer one flags the button
+// and offers to download it and restart the launcher.
+const updateModal = document.getElementById('update-modal');
+let updateClicked = false;   // "Up to date" is only worth a popup when asked for (not after the check at start)
+document.getElementById('update-button').addEventListener('click', () => {
+    if (state.update?.available) showUpdatePopup(state.update);
+    else { updateClicked = true; send('checkUpdates'); }
+});
+document.getElementById('update-no').addEventListener('click', () => { updateModal.hidden = true; });
+document.getElementById('update-yes').addEventListener('click', () => { updateModal.hidden = true; send('installUpdate'); });
+
+// The button follows every state; the popup only opens when a check (or a click) reports something.
+function renderUpdateButton(update) {
+    const button = document.getElementById('update-button');
+    button.classList.toggle('update-available', Boolean(update.available));
+    button.classList.toggle('update-checking', update.status === 'checking' || update.status === 'downloading');
+    const titles = {
+        checking: t('Checking for updates…'),
+        downloading: t('Downloading update {}…', update.version || ''),
+        available: t('Update available: {}. Click to install', update.version),
+        current: t('Up to date'),
+        error: t('Update check failed: {}', update.message || t('click to retry')),
+        idle: t('Check for updates'),
+    };
+    button.title = titles[update.status] || t('Check for updates');
+    button.setAttribute('aria-label', button.title);
+}
+
+function showUpdatePopup(update) {
+    const button = document.getElementById('update-button');
+    if (update.status === 'current') {
+        document.getElementById('update-modal-title').textContent = t('Up to date');
+        document.getElementById('update-modal-message').textContent = t('You have the latest release.');
+        updateModal.classList.add('is-notice');
+        positionUpdatePopup(button);
+        setTimeout(() => { if (updateModal.classList.contains('is-notice')) updateModal.hidden = true; }, 2600);
+        return;
+    }
+    document.getElementById('update-modal-title').textContent = t('Updates available');
+    document.getElementById('update-modal-message').textContent =
+        t('Version {} is available. Download and restart launcher?', update.version);
+    updateModal.classList.remove('is-notice');
+    positionUpdatePopup(button);
+}
+
+function renderUpdate(update) {
+    renderUpdateButton(update);
+    if (update.status === 'available' || (update.status === 'current' && updateClicked)) showUpdatePopup(update);
+    if (update.status !== 'checking') updateClicked = false;
+    if (update.status === 'checking' || update.status === 'downloading') updateModal.hidden = true;
+}
+
+function positionUpdatePopup(button) {
+    const rect = button.getBoundingClientRect();
+    updateModal.hidden = false;
+    requestAnimationFrame(() => {
+        const box = updateModal.getBoundingClientRect();
+        updateModal.style.left = `${Math.max(12, rect.left - box.width - 8)}px`;
+        updateModal.style.top = `${Math.max(8, rect.top + (rect.height - box.height) / 2)}px`;
+    });
+}
 
 // ---------- Messages from the launcher ----------
 
@@ -1044,6 +1134,12 @@ function handleMessage(message) {
             renderMusic(message.music || []);
             renderLogos(message.logos);
             renderTotalConversion();
+            renderUpdateButton(message.update || { status: 'idle' });
+            document.getElementById('version-text').textContent = `v${message.version || '1.0.0'}`;
+            break;
+        case 'updateStatus':
+            state.update = message;
+            renderUpdate(message);
             break;
         case 'gameRunning':
             state.running = message.running;

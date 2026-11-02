@@ -19,9 +19,16 @@ public sealed class MainForm : Form
     readonly LauncherPaths _paths = new();
     readonly DlcStore _dlc;
     readonly TitleUpdate _tu;
+    readonly DivasEvolution _divas;
     readonly ModStore _mods;
     Process? _tuBuild;
     bool _tuBusy;
+    Process? _divasBuild;
+    bool _divasBusy;
+    ReleaseInfo? _latestRelease;
+    bool _updateChecking;
+    // WWE2K14_UPDATE_PREVIEW=1 shows the update notice without a newer release (to check the page).
+    readonly bool _updatePreview = Environment.GetEnvironmentVariable("WWE2K14_UPDATE_PREVIEW") == "1";
     LauncherSettings _settings;
     Process? _game;
     bool _dlcBusy;
@@ -48,6 +55,7 @@ public sealed class MainForm : Form
 
         _dlc = new DlcStore(_paths.UserData);
         _tu = new TitleUpdate(_paths);
+        _divas = new DivasEvolution(_paths);
         _mods = new ModStore(_paths);
         _settings = LauncherSettings.Load(_paths.SettingsFile);
         if (_settings.GameFolder.Length == 0)
@@ -198,7 +206,14 @@ public sealed class MainForm : Form
         {
             case "init":
                 SendState();
+                _ = CheckForUpdatesAsync();
                 if (Opacity < 1) Opacity = 1;
+                break;
+            case "checkUpdates":
+                _ = CheckForUpdatesAsync();
+                break;
+            case "installUpdate":
+                _ = InstallLatestUpdateAsync();
                 break;
             case "save":
                 ApplySettings(msg!["settings"]);
@@ -236,6 +251,9 @@ public sealed class MainForm : Form
                 break;
             case "buildTu":
                 BuildTitleUpdate();
+                break;
+            case "buildDivas":
+                BuildDivas();
                 break;
             case "removeTu":
                 RemoveTitleUpdate();
@@ -313,7 +331,9 @@ public sealed class MainForm : Form
             type = "state",
             settings = _settings,
             game = new { ok = gameOk, message = gameMessage },
-            exe = new { ok = File.Exists(_paths.GameExe), path = _paths.GameExe },
+            exe = IsDivasGame()
+                ? new { ok = _divas.ExeBuilt, path = _divas.Exe }
+                : new { ok = File.Exists(_paths.GameExe), path = _paths.GameExe },
             running = _game is { HasExited: false },
             dlc = _dlc.List(),
             mods = _mods.List(),
@@ -321,9 +341,58 @@ public sealed class MainForm : Form
             music = ListMusic(),
             logos = ListLogos(),
             tu = new { installed = _tu.Installed, built = _tu.ExeBuilt, building = _tuBusy, name = _tu.Name },
+            divas = new { active = IsDivasGame(), built = _divas.ExeBuilt, building = _divasBusy },
+            version = AppUpdater.CurrentVersion,
+            update = new { status = _updateChecking ? "checking" : _latestRelease != null ? "available" : "idle", available = _latestRelease != null, version = _latestRelease?.Version },
             tc = new { busy = _tcBusy, hasBackup = Directory.Exists(Path.Combine(_paths.UserData, "backups", "vanilla_save")) },
             screen = new { width = Screen.FromControl(this).Bounds.Width, height = Screen.FromControl(this).Bounds.Height },
         });
+    }
+
+    // --- Launcher updates (AppUpdater.cs) -------------------------------------------------------------------------------
+
+    async Task CheckForUpdatesAsync()
+    {
+        if (_updatePreview)
+        {
+            Post(new { type = "updateStatus", status = "available", available = true, version = "9.9.9" });
+            return;
+        }
+        if (_updateChecking) return;
+        _updateChecking = true;
+        Post(new { type = "updateStatus", status = "checking", available = false });
+        try
+        {
+            _latestRelease = await AppUpdater.CheckAsync();
+            Post(new { type = "updateStatus", status = _latestRelease == null ? "current" : "available", available = _latestRelease != null, version = _latestRelease?.Version });
+        }
+        catch (Exception ex)
+        {
+            Post(new { type = "updateStatus", status = "error", available = false, message = ex.Message });
+        }
+        finally { _updateChecking = false; }
+    }
+
+    async Task InstallLatestUpdateAsync()
+    {
+        if (_updatePreview) { Toast("Preview only: no update was downloaded."); return; }
+        if (_latestRelease == null) { await CheckForUpdatesAsync(); return; }
+        if (_game is { HasExited: false }) { Toast("Close the game before updating the launcher.", true); return; }
+        if (!AppUpdater.CanInstall)
+        {
+            Toast("Updates install only into a release copy of the launcher.", true);
+            return;
+        }
+        try
+        {
+            Post(new { type = "updateStatus", status = "downloading", available = true, version = _latestRelease.Version });
+            await AppUpdater.DownloadAndInstallAsync(this, _latestRelease);
+        }
+        catch (Exception ex)
+        {
+            Post(new { type = "updateStatus", status = "error", available = true, message = ex.Message });
+            Toast($"Update failed: {ex.Message}", true);
+        }
     }
 
     // Written by the game (SDK achievements.cpp) once it has loaded: every achievement with its unlock state.
@@ -336,6 +405,9 @@ public sealed class MainForm : Form
 
     // The game is an extracted disc folder or a disc image (.iso); the game mounts an image itself (src/disc_image.cpp).
     static bool IsDiscImage(string path) => path.EndsWith(".iso", StringComparison.OrdinalIgnoreCase);
+
+    bool IsDivasGame() =>
+        _settings.GameFolder.Length > 0 && !IsDiscImage(_settings.GameFolder) && DivasEvolution.IsGameFolder(_settings.GameFolder);
 
     static bool GameFolderStatus(string folder, out string message)
     {
@@ -422,17 +494,26 @@ public sealed class MainForm : Form
     {
         if (_game is { HasExited: false }) { Toast("The game is already running."); return; }
         if (!GameFolderStatus(_settings.GameFolder, out string gameMessage)) { Toast(gameMessage, true); return; }
-        if (!File.Exists(_paths.GameExe)) { Toast("wwe2k14.exe was not found. Build the game first.", true); return; }
+        if (!IsDivasGame() && !File.Exists(_paths.GameExe)) { Toast("wwe2k14.exe was not found. Build the game first.", true); return; }
 
         bool fromImage = IsDiscImage(_settings.GameFolder);
         string gameXex = Path.Combine(_settings.GameFolder, "default.xex");
         bool gameIsAlreadyTu = !fromImage && IsTitleUpdateXex(gameXex);  // a disc image is the retail game
 
+        // Divas Evolution patches the game code: it plays with its own exe (built from its default.xex), never with
+        // the title update.
+        bool divas = IsDivasGame();
+        if (divas && !_divas.ExeBuilt)
+        {
+            Toast("wwe2k14_divas.exe was not found. Build Divas Evolution first.", true);
+            return;
+        }
+
         // Standalone total conversions (like Wrestling Legends) already have a TU2 default.xex,
         // so they require wwe2k14_tu.exe to match their entrypoint, but MUST NOT mount userdata\title_update
         // because delta-patching default.xexp on an already-patched XEX causes a signature mismatch crash.
-        bool useTu = (_settings.UseTitleUpdate && _tu.Ready) || gameIsAlreadyTu;
-        string exe = useTu ? _paths.TitleUpdateExe : _paths.GameExe;
+        bool useTu = !divas && ((_settings.UseTitleUpdate && _tu.Ready) || gameIsAlreadyTu);
+        string exe = divas ? _divas.Exe : useTu ? _paths.TitleUpdateExe : _paths.GameExe;
         if (useTu && !File.Exists(_paths.TitleUpdateExe))
         {
             Toast("wwe2k14_tu.exe was not found. Build the title update first.", true);
@@ -720,6 +801,28 @@ public sealed class MainForm : Form
             _tuBuild = null;
             if (_tu.ExeBuilt) { _settings.UseTitleUpdate = true; SaveSettingsQuietly(); Toast("Title update ready."); }
             else Toast("The title update build failed. The log is in the logs folder.", true);
+            SendState();
+        });
+        SendState();
+    }
+
+    void BuildDivas()
+    {
+        if (_divasBusy || !IsDivasGame()) return;
+        if (_game is { HasExited: false }) { Toast("Close the game before building Divas Evolution.", true); return; }
+        Process? build;
+        try { build = _divas.StartBuild(_settings.GameFolder); }
+        catch (System.ComponentModel.Win32Exception ex) { Toast($"The build could not start: {ex.Message}", true); return; }
+        if (build is null) { Toast(@"The build tools (tools\build-divas.ps1) are only in the WWE2K14PC project folder.", true); return; }
+        _divasBusy = true;
+        _divasBuild = build;
+        build.EnableRaisingEvents = true;
+        build.Exited += (_, _) => BeginInvoke(() =>
+        {
+            _divasBusy = false;
+            _divasBuild = null;
+            if (_divas.ExeBuilt) Toast("Divas Evolution ready.");
+            else Toast("The Divas Evolution build failed. The log is in the logs folder.", true);
             SendState();
         });
         SendState();
@@ -1030,10 +1133,12 @@ public sealed class MainForm : Form
                                 catch { }
                             }
                             _settings.GameFolder = res.GameFolder;
-                            _settings.UseTitleUpdate = true;
+                            // Divas Evolution is the retail game patched, with its own exe; the others are TU2 based.
+                            _settings.UseTitleUpdate = !IsDivasGame();
                             SaveSettingsQuietly();
                         }
                         Toast(res.Message);
+                        if (IsDivasGame() && !_divas.ExeBuilt) BuildDivas();
                     }
                     else
                     {

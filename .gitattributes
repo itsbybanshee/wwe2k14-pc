@@ -1,0 +1,6 @@
+# GitHub's language bar: count the game (C++), the launcher (C#) and its page (JS / CSS / HTML), not the build and
+# reverse-engineering tooling around them.
+tools/** linguist-vendored
+patches/** linguist-vendored
+CMakeLists.txt linguist-vendored
+res/*.rc linguist-vendored

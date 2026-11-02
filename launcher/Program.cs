@@ -54,10 +54,12 @@ static class Program
                 if (res.GameFolder != null)
                 {
                     settings.GameFolder = res.GameFolder;
-                    settings.UseTitleUpdate = true;
+                    // Divas Evolution plays with wwe2k14_divas.exe, never the title update (as with the button).
+                    bool divas = DivasEvolution.IsGameFolder(res.GameFolder);
+                    settings.UseTitleUpdate = !divas;
                     settings.Save(paths.SettingsFile);
                     Console.WriteLine($"Configured GameFolder: {res.GameFolder}");
-                    Console.WriteLine("Enabled TitleUpdate.");
+                    Console.WriteLine(divas ? "Divas Evolution: plays with wwe2k14_divas.exe." : "Enabled TitleUpdate.");
                 }
             }
             return res.Ok ? 0 : 1;

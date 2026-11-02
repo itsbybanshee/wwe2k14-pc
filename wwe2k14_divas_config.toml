@@ -1,0 +1,14 @@
+project_name = "wwe2k14"
+file_path = "game_divas/default.xex"
+out_directory_path = "generated_divas"
+
+# Divas Evolution v1.0.0 mod: the retail default.xex (0.0.0.2) with its code patched. game_divas\default.xex is not the
+# mod's file but the codegen input tools\prepare_divas.py makes from it (the mod's new code inside RADCODE, functions
+# with trampolines rebuilt in one piece); at run time the game still loads the mod's own default.xex for its data.
+# tools\build-divas.ps1 sets this up. The retail function lists apply as is (the mod moves no code), plus the mod's.
+
+# setjmp / longjmp: same as the retail game (see wwe2k14_config.toml).
+setjmp_address = 0x83438D70
+longjmp_address = 0x83438A50
+
+includes = ["config/functions.toml", "config/functions_fptrs.toml", "config/functions_thunks.toml", "config/hooks.toml", "config_divas/functions_divas.toml"]

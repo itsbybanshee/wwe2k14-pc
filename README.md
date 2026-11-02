@@ -1,4 +1,4 @@
-# WWE 2K14 PC Recomp (By Banshee) v1.1
+# WWE 2K14 PC Recomp (By Banshee) v1.2.0
 
 WWE 2K14 PC recompilation with a launcher that adds modern graphics options, mods, custom logos, your own music and more.
 
@@ -11,7 +11,14 @@ If you want to support me, here's my [Patreon](https://www.patreon.com/c/Banshee
 
 To keep up with updates, follow me on [Twitter](https://x.com/itsbybanshee).
 
-## What's new in v1.1
+## What's new in v1.2.0
+
+- 💃 **Divas Evolution**: one-click install of the Divas Evolution mod, with its own build of the game for the mod's code changes
+- 🔄 **Launcher updates**: the launcher flags new releases and downloads and installs them for you
+- 🏷️ **Build number**: the launcher shows its version next to the PC tag
+- 🎨 **New look**: new icon and red accent color across the launcher
+
+## What's new in v1.1.0
 
 - 🌍 **Languages**: supported EN/FR/DE/IT/SP. Game text, achievements & launcher switch with one click
 - 🎮 **Button mapper**: remap controller and keyboard binds. **Export / import** your control schemes to share them
@@ -32,6 +39,8 @@ To keep up with updates, follow me on [Twitter](https://x.com/itsbybanshee).
 - **Runs straight from your `.iso`**, or from an extracted game folder
 - **Mods** (wrestlers, arenas, menus, videos, sounds) with an on/off switch each
 - **Total conversion** one-click install for projects like "Wrestling Legends" 
+  and "Divas Evolution" (which changes the game code, so it plays with its own `wwe2k14_divas.exe`, built from the
+  mod with `tools\build-divas.ps1`)
 - **DLC support**
 - **Achievements** with unlock notifications and progress tracker
 - **Custom music** in the game's soundtrack or entrances (MP3, WAV, FLAC, OGG)

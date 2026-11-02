@@ -57,6 +57,27 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/generated_tu/sources.cmake")
     list(APPEND WWE2K14_TARGETS wwe2k14_tu)
 endif()
 
+# Optional Divas Evolution mod build: wwe2k14_divas.exe from generated_divas\ (tools/build-divas.ps1). The mod is the
+# retail game with its code patched and moves no function, so the app keeps the vanilla addresses; WWE2K14_DIVAS
+# only keeps this exe from switching to the vanilla / title update one when started without the launcher.
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/generated_divas/sources.cmake")
+    set(WWE2K14_VANILLA_SOURCES ${GENERATED_SOURCES})
+    include(generated_divas/sources.cmake)
+    set(WWE2K14_DIVAS_SOURCES ${GENERATED_SOURCES})
+    set(GENERATED_SOURCES ${WWE2K14_VANILLA_SOURCES})
+    if(WIN32)
+        add_executable(wwe2k14_divas WIN32 ${WWE2K14_SOURCES} ${WWE2K14_DIVAS_SOURCES})
+    else()
+        add_executable(wwe2k14_divas ${WWE2K14_SOURCES} ${WWE2K14_DIVAS_SOURCES})
+    endif()
+    target_include_directories(wwe2k14_divas PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/generated_divas)
+    target_link_libraries(wwe2k14_divas PRIVATE rex::core rex::system rex::kernel rex::graphics rex::ui)
+    rexglue_configure_target(wwe2k14_divas)
+    target_compile_definitions(wwe2k14_divas PRIVATE WWE2K14_DIVAS=1)
+    list(APPEND WWE2K14_TARGETS wwe2k14_divas)
+endif()
+
 foreach(target IN LISTS WWE2K14_TARGETS)
 if(WIN32)
     # Exe / window icon (res/wwe2k14.rc -> MAINICON).

@@ -13,10 +13,12 @@
                 <div class="launcher-title">
                     <h1>WWE 2K14</h1>
                     <span class="pill-label">PC</span>
+                    <span class="version-text" id="version-text">v1.2.0</span>
                 </div>
                 <p class="launcher-subtitle">PC recompilation by Banshee</p>
             </div>
             <nav class="social-links" aria-label="Banshee on social media">
+                <button type="button" class="social-link update-link" id="update-button" title="Check for updates" aria-label="Check for updates">Updates</button>
                 <button type="button" class="social-link" data-url="https://x.com/itsbybanshee" title="Banshee on X">
                     <img src="twitter.svg" alt="X (Twitter)" class="social-icon social-icon-twitter">
                 </button>
@@ -445,6 +447,15 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Launcher update notice, next to the Updates button (AppUpdater.cs) -->
+    <div class="update-modal" id="update-modal" role="dialog" aria-modal="true" aria-labelledby="update-modal-title" hidden>
+        <div class="update-modal-card">
+            <h2 id="update-modal-title">Updates available</h2>
+            <p id="update-modal-message">Download and restart launcher?</p>
+        </div>
+        <div class="update-modal-actions"><button type="button" class="update-yes" id="update-yes">Yes</button><button type="button" id="update-no">No</button></div>
     </div>
 
     <script src="i18n.js"></script>

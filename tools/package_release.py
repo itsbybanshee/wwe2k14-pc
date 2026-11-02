@@ -156,6 +156,13 @@ def main() -> None:
         print(f"  Copying {gf} from {src}")
         shutil.copy2(src, dst)
 
+    # Optional: the Divas Evolution build (tools/build-divas.ps1), when there is one.
+    divas_src = build_dir / "wwe2k14_divas.exe"
+    if divas_src.exists():
+        print(f"  Copying wwe2k14_divas.exe from {divas_src}")
+        shutil.copy2(divas_src, bin_dir / "wwe2k14_divas.exe")
+        sanitize_pe_pdb_path(bin_dir / "wwe2k14_divas.exe", b"wwe2k14_divas.pdb")
+
     # Sanitize PE debug paths in game executables and libraries inside bin/
     sanitize_pe_pdb_path(bin_dir / "wwe2k14.exe", b"wwe2k14.pdb")
     sanitize_pe_pdb_path(bin_dir / "wwe2k14_tu.exe", b"wwe2k14_tu.pdb")

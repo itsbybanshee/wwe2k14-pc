@@ -9,7 +9,8 @@
     <AssemblyName>WWE 2K14 PC</AssemblyName>
     <RootNamespace>Wwe2k14Launcher</RootNamespace>
     <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
-    <Version>0.1.0</Version>
+    <!-- Launcher updates compare this with the latest GitHub release tag (AppUpdater.cs): keep it equal to the tag. -->
+    <Version>1.2.0</Version>
     <ApplicationIcon>..\res\wwe2k14.ico</ApplicationIcon>
   </PropertyGroup>
 

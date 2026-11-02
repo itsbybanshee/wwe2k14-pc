@@ -1,4 +1,4 @@
-﻿From 2c4548d4fc8706b3e6b3119efd8c69b11b577a8b Mon Sep 17 00:00:00 2001
+From 2c4548d4fc8706b3e6b3119efd8c69b11b577a8b Mon Sep 17 00:00:00 2001
 From: WWE2K14 PC <wwe2k14@local>
 Date: Mon, 12 Oct 2026 20:18:55 +0200
 Subject: [PATCH 1/2] WWE 2K14 PC: SDK changes
@@ -6311,7 +6311,7 @@ index 2480558..676ba1f 100644
 +#endif
 +}
 +
- // Category registry ΓÇö indices 0..kBuiltinCount-1 are SDK built-ins.
+ // Category registry — indices 0..kBuiltinCount-1 are SDK built-ins.
  std::vector<LogCategoryEntry> g_registry;
  
  // Shared default sinks (stored for pattern changes)
@@ -22300,7 +22300,7 @@ index 0000000..9dd18b7
 + *   powerpc-none-elf-as -a32 -be -mregnames -mpower7
 + * and disassembled back with powerpc-none-elf-objdump.
 + * NOTE (cycle 9): the dual-window words in the task brief for `clrlwi r7,r9,29`
-+ * and `bne cr6,+8` were re-derived (no assembler is installed here) ΓÇö the
++ * and `bne cr6,+8` were re-derived (no assembler is installed here) — the
 + * brief's 0x5527078E decodes to MB=30/ME=7 (not a clrlwi 29) and 0x40860008
 + * decodes to BI=6 (cr1, not cr6). The corrected words are 0x5527077E and
 + * 0x409A000C; see the constants below.

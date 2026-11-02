@@ -186,6 +186,37 @@ const I18N_ROWS = [
     ['Not a title update (content type {}).', "Ce n'est pas une mise à jour (type de contenu {}).", 'Kein Titel-Update (Inhaltstyp {}).', 'Non è un aggiornamento (tipo di contenuto {}).', 'No es una actualización (tipo de contenido {}).'],
     ['This package has no default.xexp: not a WWE 2K14 title update.', "Ce paquet n'a pas de default.xexp : ce n'est pas une mise à jour de WWE 2K14.", 'Dieses Paket hat keine default.xexp: kein WWE-2K14-Titel-Update.', 'Questo pacchetto non ha default.xexp: non è un aggiornamento di WWE 2K14.', 'Este paquete no tiene default.xexp: no es una actualización de WWE 2K14.'],
 
+    // Launcher updates (AppUpdater.cs)
+    ['Updates', 'Mises à jour', 'Updates', 'Aggiornamenti', 'Actualizaciones'],
+    ['Check for updates', 'Rechercher des mises à jour', 'Nach Updates suchen', 'Cerca aggiornamenti', 'Buscar actualizaciones'],
+    ['Checking for updates…', 'Recherche de mises à jour…', 'Suche nach Updates…', 'Ricerca aggiornamenti…', 'Buscando actualizaciones…'],
+    ['Downloading update {}…', 'Téléchargement de la mise à jour {}…', 'Update {} wird heruntergeladen…', "Download dell'aggiornamento {}…", 'Descargando la actualización {}…'],
+    ['Update available: {}. Click to install', 'Mise à jour disponible : {}. Cliquez pour installer', 'Update verfügbar: {}. Zum Installieren klicken', 'Aggiornamento disponibile: {}. Clicca per installare', 'Actualización disponible: {}. Haz clic para instalar'],
+    ['Up to date', 'À jour', 'Aktuell', 'Aggiornato', 'Al día'],
+    ['You have the latest release.', 'Vous avez la dernière version.', 'Du hast die neueste Version.', "Hai l'ultima versione.", 'Tienes la última versión.'],
+    ['Update check failed: {}', 'Échec de la recherche de mises à jour : {}', 'Update-Suche fehlgeschlagen: {}', 'Ricerca aggiornamenti non riuscita: {}', 'Error al buscar actualizaciones: {}'],
+    ['click to retry', 'cliquez pour réessayer', 'zum Wiederholen klicken', 'clicca per riprovare', 'haz clic para reintentar'],
+    ['Updates available', 'Mises à jour disponibles', 'Updates verfügbar', 'Aggiornamenti disponibili', 'Actualizaciones disponibles'],
+    ['Version {} is available. Download and restart launcher?', 'La version {} est disponible. Télécharger et redémarrer le launcher ?', 'Version {} ist verfügbar. Herunterladen und Launcher neu starten?', 'La versione {} è disponibile. Scaricare e riavviare il launcher?', 'La versión {} está disponible. ¿Descargar y reiniciar el launcher?'],
+    ['Download and restart launcher?', 'Télécharger et redémarrer le launcher ?', 'Herunterladen und Launcher neu starten?', 'Scaricare e riavviare il launcher?', '¿Descargar y reiniciar el launcher?'],
+    ['Yes', 'Oui', 'Ja', 'Sì', 'Sí'],
+    ['No', 'Non', 'Nein', 'No', 'No'],
+    ['Update failed: {}', 'Échec de la mise à jour : {}', 'Update fehlgeschlagen: {}', 'Aggiornamento non riuscito: {}', 'Error en la actualización: {}'],
+    ['Close the game before updating the launcher.', 'Fermez le jeu avant de mettre à jour le launcher.', 'Schließe das Spiel, bevor du den Launcher aktualisierst.', 'Chiudi il gioco prima di aggiornare il launcher.', 'Cierra el juego antes de actualizar el launcher.'],
+    ['Updates install only into a release copy of the launcher.', "Les mises à jour ne s'installent que dans une copie publiée du launcher.", 'Updates werden nur in eine veröffentlichte Kopie des Launchers installiert.', 'Gli aggiornamenti si installano solo in una copia pubblicata del launcher.', 'Las actualizaciones solo se instalan en una copia publicada del launcher.'],
+    ['Preview only: no update was downloaded.', "Aperçu uniquement : aucune mise à jour n'a été téléchargée.", 'Nur Vorschau: Es wurde kein Update heruntergeladen.', 'Solo anteprima: nessun aggiornamento è stato scaricato.', 'Solo vista previa: no se descargó ninguna actualización.'],
+
+    // Divas Evolution (its own exe, DivasEvolution.cs)
+    ['Build Divas', 'Compiler Divas', 'Divas erstellen', 'Compila Divas', 'Compilar Divas'],
+    ['Divas Evolution plays with its own build of the game.', 'Divas Evolution se joue avec sa propre version compilée du jeu.', 'Divas Evolution läuft mit einer eigenen Version des Spiels.', 'Divas Evolution usa una sua versione compilata del gioco.', 'Divas Evolution se juega con su propia versión compilada del juego.'],
+    ['Building Divas Evolution in the console window. This takes a while; the launcher updates when it is done.', 'Compilation de Divas Evolution dans la fenêtre de console. Cela prend un moment ; le launcher se met à jour à la fin.', 'Divas Evolution wird im Konsolenfenster erstellt. Das dauert etwas; der Launcher aktualisiert sich danach.', "Compilazione di Divas Evolution nella finestra della console. Richiede un po' di tempo; il launcher si aggiorna al termine.", 'Compilando Divas Evolution en la ventana de la consola. Tarda un poco; el launcher se actualizará al terminar.'],
+    ['Divas Evolution changes the game code. Build it once to play it.', 'Divas Evolution modifie le code du jeu. Compilez-le une fois pour y jouer.', 'Divas Evolution ändert den Spielcode. Einmal erstellen, um es zu spielen.', 'Divas Evolution modifica il codice del gioco. Compilalo una volta per giocarci.', 'Divas Evolution cambia el código del juego. Compílalo una vez para jugarlo.'],
+    ['Playing Divas Evolution.', 'Vous jouez à Divas Evolution.', 'Du spielst Divas Evolution.', 'Stai giocando a Divas Evolution.', 'Jugando a Divas Evolution.'],
+    ['wwe2k14_divas.exe was not found. Build Divas Evolution first.', "wwe2k14_divas.exe introuvable. Compilez d'abord Divas Evolution.", 'wwe2k14_divas.exe wurde nicht gefunden. Erstelle zuerst Divas Evolution.', 'wwe2k14_divas.exe non trovato. Compila prima Divas Evolution.', 'No se encontró wwe2k14_divas.exe. Compila primero Divas Evolution.'],
+    ['Close the game before building Divas Evolution.', 'Fermez le jeu avant de compiler Divas Evolution.', 'Schließe das Spiel, bevor du Divas Evolution erstellst.', 'Chiudi il gioco prima di compilare Divas Evolution.', 'Cierra el juego antes de compilar Divas Evolution.'],
+    ['Divas Evolution ready.', 'Divas Evolution prêt.', 'Divas Evolution bereit.', 'Divas Evolution pronto.', 'Divas Evolution listo.'],
+    ['The Divas Evolution build failed. The log is in the logs folder.', 'La compilation de Divas Evolution a échoué. Le journal est dans le dossier logs.', 'Das Erstellen von Divas Evolution ist fehlgeschlagen. Das Protokoll liegt im Ordner logs.', 'La compilazione di Divas Evolution non è riuscita. Il log è nella cartella logs.', 'La compilación de Divas Evolution falló. El registro está en la carpeta logs.'],
+
     // Game start
     ['The game is already running.', 'Le jeu est déjà lancé.', 'Das Spiel läuft bereits.', 'Il gioco è già in esecuzione.', 'El juego ya se está ejecutando.'],
     ['The game could not start: {}', "Le jeu n'a pas pu démarrer : {}", 'Das Spiel konnte nicht starten: {}', 'Impossibile avviare il gioco: {}', 'No se pudo iniciar el juego: {}'],

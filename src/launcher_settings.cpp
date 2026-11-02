@@ -99,7 +99,7 @@ void SetEnvStrIfUnset(const char* name, const std::string& value) {
   }
 }
 
-#if defined(_WIN32)
+#if defined(_WIN32) && !defined(WWE2K14_DIVAS)
 // Starts the other version with this process's arguments. True when it started.
 bool StartOtherVersion(const fs::path& exe) {
   std::wstring args = GetCommandLineW();
@@ -147,13 +147,14 @@ void ApplyLauncherSettings(rex::PathConfig& paths, bool started_by_launcher) {
 
   // Version: the launcher's Vanilla / Title update choice, when that version is built and the update installed.
   const fs::path update_folder = user_data / "title_update";
-  const bool want_tu = flag("UseTitleUpdate", false) && fs::exists(update_folder / "default.xexp", ec);
+  [[maybe_unused]] const bool want_tu = flag("UseTitleUpdate", false) && fs::exists(update_folder / "default.xexp", ec);
 #ifdef WWE2K14_TU
   constexpr bool is_tu = true;
 #else
   constexpr bool is_tu = false;
 #endif
-#if defined(_WIN32)
+#if defined(_WIN32) && !defined(WWE2K14_DIVAS)
+  // (The Divas Evolution exe only runs that mod's game folder: no version switch.)
   if (want_tu != is_tu) {
     const fs::path other =
         rex::filesystem::GetExecutableFolder() / (want_tu ? "wwe2k14_tu.exe" : "wwe2k14.exe");
