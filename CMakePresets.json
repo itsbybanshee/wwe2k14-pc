@@ -4,6 +4,8 @@
   "configurePresets": [
     {
       "name": "win-amd64",
+      "displayName": "Windows x64 (clang)",
+      "description": "wwe2k14.exe, plus wwe2k14_tu.exe / wwe2k14_divas.exe once tools\\build-tu.ps1 / tools\\build-divas.ps1 generated them",
       "generator": "Ninja Multi-Config",
       "binaryDir": "${sourceDir}/out/build/win-amd64",
       "cacheVariables": {
@@ -20,8 +22,8 @@
     }
   ],
   "buildPresets": [
-    { "name": "debug", "configurePreset": "win-amd64", "configuration": "Debug" },
-    { "name": "relwithdebinfo", "configurePreset": "win-amd64", "configuration": "RelWithDebInfo" },
-    { "name": "release", "configurePreset": "win-amd64", "configuration": "Release" }
+    { "name": "debug", "displayName": "Debug", "configurePreset": "win-amd64", "configuration": "Debug" },
+    { "name": "relwithdebinfo", "displayName": "RelWithDebInfo (release builds)", "configurePreset": "win-amd64", "configuration": "RelWithDebInfo" },
+    { "name": "release", "displayName": "Release", "configurePreset": "win-amd64", "configuration": "Release" }
   ]
 }

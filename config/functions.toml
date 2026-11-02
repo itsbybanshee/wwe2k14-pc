@@ -1,5 +1,6 @@
 # Function boundaries ReXGlue's scanner misses in WWE 2K14 (default.xex 0.0.0.2).
 # Found from codegen "UnresolvedCall" errors with tools/find_functions.py.
+# The Divas Evolution build uses these lists too (wwe2k14_divas_config.toml): the mod moves no retail function.
 
 [functions]
 

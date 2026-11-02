@@ -3,7 +3,8 @@ file_path = "game/default.xex"
 out_directory_path = "generated"
 
 # WWE 2K14 retail disc: default.xex "WWE14_DVD_MASTER.exe", title ID 545408B2, version 0.0.0.2
-# (built 2013-09-03), no title update.
+# (built 2013-09-03), no title update. Its function lists (config\) also serve the Divas Evolution build
+# (wwe2k14_divas_config.toml), which is this same retail code patched by the mod.
 
 # The CRT's setjmp / longjmp (jmp_buf in r3). Recompiled as plain code, setjmp is truncated and
 # returns the jmp_buf address, so libjpeg decodes take their error path (a crash in the Create
