@@ -4,7 +4,12 @@
 
 <h1 align="center">WWE 2K14 PC Recomp (By Banshee) v1.2.0</h1>
 
-WWE 2K14 PC recompilation with a launcher that adds modern graphics options, mods, custom logos, your own music and more.
+<p align="center">
+  <b>WWE 2K14 recompilation for PC.</b>
+
+---
+
+- Includes a launcher that adds modern graphics options, mods support, customp logos, music and more.
 
 - No game data included. You need your own legally acquired WWE 2K14 (Xbox 360) files: a disc image (`.iso`) or the
   extracted game folder.
