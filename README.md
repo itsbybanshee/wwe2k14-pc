@@ -23,7 +23,7 @@ To keep up with updates, follow me on [Twitter](https://x.com/itsbybanshee).
 
 ## What's new in v1.2.1
 
-- 🎬 **Entrance preview:** fixed issue where player would get stuck in create-an-entrance when previewing current entrance
+- 🎬 **Entrance preview:** fixed game being stuck in create-an-entrance when previewing entrances
 - 📦 **Total conversions:** the button shows the mod's name and mod DLC installs with it
 - 🤼 **Movesets:** fixed issue freezing the game when previewing finishers or signatures
 - 🗑️ **Remove all:** clear all your DLC with one click
