@@ -9,10 +9,11 @@
 
 ---
 
-- Includes a launcher that adds modern graphics options, mods support, customp logos, music and more.
+- Includes a launcher that adds modern graphics options, mods support, custom logos, music and more.
 
-- No game data included. You need your own legally acquired WWE 2K14 (Xbox 360) files: a disc image (`.iso`) or the
-  extracted game folder.
+- You need your own legally acquired WWE 2K14 (Xbox 360) files: a disc image (`.iso`) or game folder.
+
+- It is recommended to apply a title update and install DLC's for an optimal experience.
 
 ## Socials
 
@@ -26,14 +27,14 @@ To keep up with updates, follow me on [Twitter](https://x.com/itsbybanshee).
 - 📦 **Total conversions:** the button shows the mod's name and mod DLC installs with it
 - 🤼 **Movesets:** fixed issue freezing the game when previewing finishers or signatures
 - 🗑️ **Remove all:** clear all your DLC with one click
-- 💃 **Divas Evolution:** supports the creator's updated XEX [Twitter](https://x.com/yaboibouncy)
+- 💃 **Divas Evolution:** supports the creator's updated XEX [Twitter](https://x.com/yaboibouncy).
 
 ## What's new in v1.2.0
 
 - 💃 **Divas Evolution**: one-click total conversion install of the Divas Evolution mod
 - 🔄 **Launcher updates**: the launcher flags new releases and downloads and installs them for you
 - 🏷️ **Build number**: the launcher shows its version next to the PC tag
-- 🎨 **New look**: new icon and red accent color across the launcher
+- 🎨 **New look**: new icon and red accent color across the launcher.
 
 ## What's new in v1.1.0
 
