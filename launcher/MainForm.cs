@@ -31,6 +31,8 @@ public sealed class MainForm : Form
     readonly bool _updatePreview = Environment.GetEnvironmentVariable("WWE2K14_UPDATE_PREVIEW") == "1";
     LauncherSettings _settings;
     Process? _game;
+    System.Windows.Forms.Timer? _gameWatch;
+    bool _gameEndedByLauncher;
     bool _dlcBusy;
 
     static readonly JsonSerializerOptions Json = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
@@ -237,6 +239,9 @@ public sealed class MainForm : Form
             case "removeDlc":
                 RemoveDlc((string?)msg!["name"]);
                 break;
+            case "removeAllDlc":
+                RemoveAllDlc();
+                break;
             case "openFolder":
                 OpenFolder((string?)msg!["which"]);
                 break;
@@ -325,6 +330,13 @@ public sealed class MainForm : Form
 
     void SendState()
     {
+        // Remember the plain game, for Restore Vanilla.
+        if (_settings.GameFolder.Length > 0 && _settings.GameFolder != _settings.VanillaGameFolder &&
+            TotalConversion.ActiveName(_settings) is null && !IsTitleUpdateXex(Path.Combine(_settings.GameFolder, "default.xex")))
+        {
+            _settings.VanillaGameFolder = _settings.GameFolder;
+            SaveSettingsQuietly();
+        }
         bool gameOk = GameFolderStatus(_settings.GameFolder, out string gameMessage);
         Post(new
         {
@@ -344,7 +356,7 @@ public sealed class MainForm : Form
             divas = new { active = IsDivasGame(), built = _divas.ExeBuilt, building = _divasBusy },
             version = AppUpdater.CurrentVersion,
             update = new { status = _updateChecking ? "checking" : _latestRelease != null ? "available" : "idle", available = _latestRelease != null, version = _latestRelease?.Version },
-            tc = new { busy = _tcBusy, hasBackup = Directory.Exists(Path.Combine(_paths.UserData, "backups", "vanilla_save")) },
+            tc = new { busy = _tcBusy, name = TotalConversion.ActiveName(_settings), hasBackup = Directory.Exists(Path.Combine(_paths.UserData, "backups", "vanilla_save")) },
             screen = new { width = Screen.FromControl(this).Bounds.Width, height = Screen.FromControl(this).Bounds.Height },
         });
     }
@@ -638,9 +650,12 @@ public sealed class MainForm : Form
         }
         DisplayHelper.SwitchTo60Hz();
         _game.EnableRaisingEvents = true;
+        WatchGameWindow(_game);
         _game.Exited += (_, _) => BeginInvoke(() =>
         {
-            int code = _game?.ExitCode ?? 0;
+            int code = _gameEndedByLauncher ? 0 : _game?.ExitCode ?? 0;
+            _gameWatch?.Dispose();
+            _gameWatch = null;
             _game = null;
             _mods.CleanupStaged();
             DisplayHelper.RestoreOriginal();
@@ -690,6 +705,37 @@ public sealed class MainForm : Form
         InstallDlc(files);
     }
 
+    // Closing the game's window can leave its process hanging in shutdown, which would keep the launcher on "Running":
+    // once the window has been gone for 3 seconds the game is over, so end the process.
+    void WatchGameWindow(Process game)
+    {
+        bool hadWindow = false;
+        int secondsGone = 0;
+        _gameEndedByLauncher = false;
+        _gameWatch = new System.Windows.Forms.Timer { Interval = 1000 };
+        _gameWatch.Tick += (_, _) =>
+        {
+            try
+            {
+                if (game.HasExited) return;
+                game.Refresh();
+                if (game.MainWindowHandle != IntPtr.Zero)
+                {
+                    hadWindow = true;
+                    secondsGone = 0;
+                }
+                else if (hadWindow && ++secondsGone >= 3)
+                {
+                    _gameEndedByLauncher = true;
+                    _gameWatch?.Stop();
+                    game.Kill();
+                }
+            }
+            catch (Exception ex) when (ex is InvalidOperationException or System.ComponentModel.Win32Exception) { }
+        };
+        _gameWatch.Start();
+    }
+
     void InstallDlc(string[] files)
     {
         if (_dlcBusy) { Toast("DLC is already being installed."); return; }
@@ -734,6 +780,29 @@ public sealed class MainForm : Form
             Toast($"Could not remove it: {ex.Message}", true);
         }
         SendState();
+    }
+
+    void RemoveAllDlc()
+    {
+        if (_dlcBusy) { Toast("DLC is already being installed."); return; }
+        if (_game is { HasExited: false }) { Toast("Close the game before removing DLC.", true); return; }
+        _dlcBusy = true;
+        Task.Run(() =>
+        {
+            string? error = null;
+            foreach (var item in _dlc.List())
+            {
+                try { _dlc.Remove(item.Name); }
+                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException) { error = ex.Message; }
+            }
+            BeginInvoke(() =>
+            {
+                _dlcBusy = false;
+                if (error is null) Toast("All DLC removed.");
+                else Toast($"Could not remove it: {error}", true);
+                SendState();
+            });
+        });
     }
 
     void OpenFolder(string? which)
@@ -1119,20 +1188,17 @@ public sealed class MainForm : Form
                     Post(new { type = "tcProgressDone" });
                     if (res.Ok)
                     {
+                        _settings.TotalConversionDlc.AddRange(res.DlcAdded ?? []);
+                        SaveSettingsQuietly();
                         if (res.GameFolder != null)
                         {
                             if (!string.IsNullOrWhiteSpace(_settings.GameFolder) && _settings.GameFolder != res.GameFolder)
                             {
                                 _settings.PreviousGameFolder = _settings.GameFolder;
-                                try
-                                {
-                                    string backupDir = Path.Combine(_paths.UserData, "backups", "vanilla_save");
-                                    Directory.CreateDirectory(backupDir);
-                                    File.WriteAllText(Path.Combine(backupDir, "game_folder.txt"), _settings.GameFolder);
-                                }
-                                catch { }
                             }
                             _settings.GameFolder = res.GameFolder;
+                            _settings.TotalConversionFolder = res.GameFolder;
+                            _settings.TotalConversionName = TotalConversion.NameFromFolder(folder, res.GameFolder);
                             // Divas Evolution is the retail game patched, with its own exe; the others are TU2 based.
                             _settings.UseTitleUpdate = !IsDivasGame();
                             SaveSettingsQuietly();
@@ -1165,53 +1231,22 @@ public sealed class MainForm : Form
         if (_tcBusy) return;
         if (_game is { HasExited: false }) { Toast("Close the game before restoring vanilla.", true); return; }
 
-        string restoredFolder = "";
-        string backupFolderFile = Path.Combine(_paths.UserData, "backups", "vanilla_save", "game_folder.txt");
-
-        if (!string.IsNullOrEmpty(_settings.PreviousGameFolder) && Directory.Exists(_settings.PreviousGameFolder))
-        {
-            restoredFolder = _settings.PreviousGameFolder;
-        }
-        else if (File.Exists(backupFolderFile))
-        {
-            try
-            {
-                string txt = File.ReadAllText(backupFolderFile).Trim();
-                if (Directory.Exists(txt)) restoredFolder = txt;
-            }
-            catch { }
-        }
-
-        if (string.IsNullOrEmpty(restoredFolder) && !string.IsNullOrEmpty(_paths.DefaultGameFolder) && Directory.Exists(_paths.DefaultGameFolder))
-        {
-            restoredFolder = _paths.DefaultGameFolder;
-        }
-
-        if (string.IsNullOrEmpty(restoredFolder))
-        {
-            string commonDisc = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads", "xiso", "WWE 2K14 (USA, Europe)");
-            if (Directory.Exists(commonDisc)) restoredFolder = commonDisc;
-        }
-
-        if (!string.IsNullOrEmpty(restoredFolder))
-        {
-            _settings.GameFolder = restoredFolder;
-        }
-
-        _settings.UseTitleUpdate = false;
+        // No plain game remembered: the game folder ends up empty, for the Game files box to ask for one.
+        string game = TotalConversion.FindVanillaGame(_settings, _paths) ?? "";
 
         var tc = new TotalConversion(_paths, _dlc);
-        if (tc.RestoreVanilla(out string message))
+        if (tc.RestoreVanilla(_settings, out string message))
         {
-            SaveSettingsQuietly();
-            string folderName = !string.IsNullOrEmpty(_settings.GameFolder) ? Path.GetFileName(_settings.GameFolder) : "";
-            Toast(string.IsNullOrEmpty(folderName) ? message : $"{message} Restored game folder to '{folderName}'.");
+            _settings.GameFolder = game;
+            _settings.UseTitleUpdate = false;
+            string folderName = Path.GetFileName(game);
+            Toast(folderName.Length == 0 ? message : $"{message} Restored game folder to '{folderName}'.");
         }
         else
         {
-            SaveSettingsQuietly();
             Toast(message, true);
         }
+        SaveSettingsQuietly();
         SendState();
     }
 

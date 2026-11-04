@@ -27,6 +27,14 @@ public sealed class LauncherSettings
     public bool UseTitleUpdate { get; set; } = true;
     public string GameFolder { get; set; } = "";
     public string PreviousGameFolder { get; set; } = "";
+    // The last installed total conversion: its name replaces "Total Conversion" on the buttons while its game folder is
+    // the selected one.
+    public string TotalConversionName { get; set; } = "";
+    public string TotalConversionFolder { get; set; } = "";
+    // DLC folders the total conversion added, removed again by Restore Vanilla.
+    public List<string> TotalConversionDlc { get; set; } = new();
+    // The last game folder or disc image that wasn't a total conversion: what Restore Vanilla goes back to.
+    public string VanillaGameFolder { get; set; } = "";
 
     [JsonIgnore] public static readonly string[] Resolutions = ["720", "1080", "1440", "2160"];
     [JsonIgnore] public static readonly string[] WindowModeOptions = ["windowed", "borderless", "fullscreen"];

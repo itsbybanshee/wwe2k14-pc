@@ -3,10 +3,10 @@
 
     python -I tools/prepare_divas.py "<mod folder>/default.xex" game_divas/default.xex
 
-Divas Evolution v1.0.0 (by @stqned) is the retail game (default.xex 0.0.0.2) with its code patched: ~70 changed
-instructions in .text, ~5 KB of new code in the gap after RADCODE (0x835C3500-0x835C48C4, in no PE section) and a
-74 KB data blob appended at 0x83A60010. Data is read from the mod's own default.xex at run time, so the data side
-needs nothing. The code has to be recompiled, and three things in it are outside what the codegen handles:
+Divas Evolution (by @stqned, the default.xex of Nov 2026) is the retail game (default.xex 0.0.0.2) with its code
+patched: ~75 changed instructions in .text, ~5 KB of new code in the gap after RADCODE (0x835C3500-0x835C4904, in no PE
+section) and a zlib-compressed default save split over the unused gaps between sections (table at 0x835C4904). Data is
+read from the mod's own default.xex at run time, so the data side needs nothing. The code has to be recompiled, and three things in it are outside what the codegen handles:
 
   * the new code lies outside every executable section, so the codegen never decodes it;
   * trampolines: a .text instruction becomes `b <new code>`, which ends with `b` back into the middle of the original
@@ -32,13 +32,14 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 TOML_OUT = ROOT / "config_divas" / "functions_divas.toml"
 
-DIVAS_SHA256 = "9E4B720A4167A435F45F5E8B6D275012B513034319722F3BDDE6DD74C9B46931"
+DIVAS_SHA256 = "22ADF8FAE6381F4B529E97C43E013E94B161D3E0C409979963B59F60B41417F6"
 BASE = 0x82000000
 RADCODE_VA = 0x835C2A00
 NEXT_SECTION_VA = 0x835D0000  # BINKBSS: the rebuilt code must end before it
-COPIES_BASE = 0x835C5000      # free space after the mod's code
+COPIES_BASE = 0x835C8000      # free space after the mod's code and save fragments
 
 NOP = 0x60000000
+SAVE_TABLE = 0x835C4904       # (address, word count) pairs, up to a zero address: the default save's fragments
 
 # New functions of the mod in the RADCODE gap: address -> (size, what it does as far as the code shows).
 MOD_FUNCTIONS = {
@@ -48,6 +49,8 @@ MOD_FUNCTIONS = {
     0x835C3A50: (0x88, "adjusts r4 (1..99) before tail-calling 0x82464880"),
     0x835C3AD8: (0x74, "sets +0x959 on a wrestler after a roll"),
     0x835C3B4C: (0x68, "sets +0x959 on a wrestler after a roll"),
+    0x835C3C00: (0x2C, "runs 0x835C3C2C on the table at *0x837733C0 + 0x112824"),
+    0x835C3C2C: (0x44, "sets the top bit of two table entries (ids 0x7D8, 0x9D0)"),
     0x835C3D00: (0x9C, "flags (+0x10 = 1) 16 match/move ids"),
     0x835C3D9C: (0x58, "runs 0x835C3D00 over the 400-entry table at *0x837733C0"),
     0x835C3DF4: (0x58, "wraps 0x827D8EF0, then flags entry r3 of that table"),
@@ -59,8 +62,8 @@ MOD_FUNCTIONS = {
     0x835C4300: (0x10C, "loads extra 'COSX' records into the 200-slot list"),
     0x835C4500: (0x3C, "calls 0x822C1CF0 unless 0x822C0CA8 says so"),
     0x835C4600: (0xC, "returns the 2-entry table at 0x835C4610 in r5"),
-    0x835C4874: (0x28, "picks r8 = 0x22 once after the 0x5EED marker"),
-    0x835C489C: (0x28, "picks r11 = 0x22 once after the 0x5EED marker"),
+    0x835C48B4: (0x28, "picks r8 = 0x22 once after the 0x5EED marker"),
+    0x835C48DC: (0x28, "picks r11 = 0x22 once after the 0x5EED marker"),
 }
 
 # Functions whose trampolines go back into their middle: parent start -> list of (site, piece start, piece end).
@@ -72,7 +75,7 @@ PARENTS = {
     0x82818688: [(0x828186DC, 0x835C440C, 0x835C4428)],
     0x8281F150: [(0x8281F370, 0x835C4100, 0x835C411C)],
     0x82820090: [(0x82820128, 0x835C411C, 0x835C413C)],
-    0x82918E10: [(0x82919924, 0x835C4800, 0x835C4874)],
+    0x82918E10: [(0x82919924, 0x835C4800, 0x835C48B4)],
 }
 
 # The hooked function: its first instruction became `b 0x835C4044`; the displaced instruction sits at 0x835C404C,
@@ -275,6 +278,18 @@ def rebuild(img: Image, start: int, pieces: list[tuple[int, int, int]], dest: in
     return at - dest
 
 
+def clear_save_fragments(img: Image) -> None:
+    """The fragments inside RADCODE's new range are data: nothing should decode them as code."""
+    table = SAVE_TABLE
+    while (addr := img.word(table)) != 0:
+        count = img.word(table + 4)
+        if RADCODE_VA <= addr < NEXT_SECTION_VA:
+            img.data[addr - BASE:addr - BASE + count * 4] = bytes(count * 4)
+        img.put(table, 0)
+        img.put(table + 4, 0)
+        table += 8
+
+
 def set_radcode_size(img: Image, end: int) -> None:
     pe = struct.unpack_from("<I", img.data, 0x3C)[0]
     nsec = struct.unpack_from("<H", img.data, pe + 6)[0]
@@ -296,12 +311,13 @@ def main() -> None:
     raw = src.read_bytes()
     digest = hashlib.sha256(raw).hexdigest().upper()
     if digest != DIVAS_SHA256:
-        sys.exit(f"{src} is not the Divas Evolution v1.0.0 default.xex (sha256 {digest})")
+        sys.exit(f"{src} is not the supported Divas Evolution default.xex (sha256 {digest})")
     header, ffi, data = load_xex(raw)
     img = Image(data)
+    clear_save_fragments(img)
 
     toml = [
-        "# Divas Evolution v1.0.0 (wwe2k14_divas.exe): the mod's new code and the rebuilt copies of the functions",
+        "# Divas Evolution (wwe2k14_divas.exe): the mod's new code and the rebuilt copies of the functions",
         "# it patches with trampolines. Written by tools/prepare_divas.py, which also writes the matching",
         "# game_divas/default.xex; regenerate both together.",
         "",

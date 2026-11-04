@@ -3,14 +3,15 @@ using System.Security.Cryptography;
 
 namespace Wwe2k14Launcher;
 
-// The Divas Evolution mod (v1.0.0, by @stqned). Unlike data-only total conversions it patches the game's code, which
+// The Divas Evolution mod (by @stqned; the default.xex of Nov 2026). Unlike data-only total conversions it patches the game's code, which
 // the recompiled exe can't pick up from the mod's default.xex. So the mod gets its own exe, wwe2k14_divas.exe, built
 // once from the mod's default.xex (tools\build-divas.ps1), like the title update's. The mod installs with the Total
 // Conversion button like any other (its game folder and DLC); the launcher recognises its default.xex and plays it
 // with that exe.
 public sealed class DivasEvolution
 {
-    const string Sha256 = "9E4B720A4167A435F45F5E8B6D275012B513034319722F3BDDE6DD74C9B46931";
+    public const string Name = "Divas Evolution";
+    const string Sha256 = "22ADF8FAE6381F4B529E97C43E013E94B161D3E0C409979963B59F60B41417F6";
 
     readonly LauncherPaths _paths;
 

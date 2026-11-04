@@ -613,6 +613,9 @@ function renderTotalConversion() {
     tcButtons.forEach(btn => {
         if (btn) btn.disabled = busy;
     });
+    document.querySelectorAll('.tc-label').forEach(label => {
+        label.textContent = state.tc?.name || 'Total Conversion';
+    });
     const restoreBtn = document.getElementById('btn-restore-vanilla');
     if (restoreBtn) {
         restoreBtn.style.display = 'inline-flex';
@@ -645,6 +648,7 @@ function formatSize(bytes) {
 function renderDlc() {
     elements.dlcList.replaceChildren();
     elements.dlcCount.textContent = state.dlc.length ? String(state.dlc.length) : '';
+    document.getElementById('remove-all-dlc').disabled = state.running || !state.dlc.length;
     if (!state.dlc.length) {
         const empty = document.createElement('li');
         empty.className = 'dlc-empty';
@@ -752,6 +756,11 @@ function showToast(message, isError = false) {
     toast.className = isError ? 'toast is-error' : 'toast';
     toast.setAttribute('role', isError ? 'alert' : 'status');
     toast.textContent = message;
+    // Inside the right panel, 16px clear of its sides and bottom.
+    const panel = document.querySelector('.dlc-panel').getBoundingClientRect();
+    toast.style.left = `${panel.left + 16}px`;
+    toast.style.right = `${window.innerWidth - panel.right + 16}px`;
+    toast.style.bottom = `${Math.max(16, window.innerHeight - panel.bottom + 16)}px`;
     document.querySelectorAll('.toast').forEach(old => old.remove());
     document.body.appendChild(toast);
     window.setTimeout(() => toast.remove(), isError ? 5200 : 2600);
@@ -871,6 +880,9 @@ document.getElementById('tu-action').addEventListener('click', () => {
 });
 document.getElementById('add-dlc-files').addEventListener('click', () => send('addDlcFiles'));
 document.getElementById('add-dlc-folder').addEventListener('click', () => send('addDlcFolder'));
+document.getElementById('remove-all-dlc').addEventListener('click', () => {
+    if (window.confirm(t('Remove all {} DLC packages? You can add them again later.', state.dlc.length))) send('removeAllDlc');
+});
 document.getElementById('add-music').addEventListener('click', () => send('addMusic'));
 document.getElementById('add-logo').addEventListener('click', () => send('addLogo'));
 document.getElementById('import-ps3-logos').addEventListener('click', () => send('importPs3Logos'));

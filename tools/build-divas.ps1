@@ -1,4 +1,4 @@
-# Builds wwe2k14_divas.exe: WWE 2K14 with the Divas Evolution v1.0.0 mod's code. The vanilla game (wwe2k14.exe) is
+# Builds wwe2k14_divas.exe: WWE 2K14 with the Divas Evolution mod's code. The vanilla game (wwe2k14.exe) is
 # untouched. Needs the mod's folder (the one with its default.xex: the launcher's game folder once the mod is
 # installed with the Total Conversion button) and the vanilla game built once (generated\, tools\codegen.ps1).
 #   tools\build-divas.ps1 -ModFolder <mod folder>

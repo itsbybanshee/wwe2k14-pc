@@ -51,9 +51,13 @@ static class Program
             if (res.Ok)
             {
                 var settings = LauncherSettings.Load(paths.SettingsFile);
+                settings.TotalConversionDlc.AddRange(res.DlcAdded ?? []);
+                settings.Save(paths.SettingsFile);
                 if (res.GameFolder != null)
                 {
                     settings.GameFolder = res.GameFolder;
+                    settings.TotalConversionFolder = res.GameFolder;
+                    settings.TotalConversionName = TotalConversion.NameFromFolder(args[1], res.GameFolder);
                     // Divas Evolution plays with wwe2k14_divas.exe, never the title update (as with the button).
                     bool divas = DivasEvolution.IsGameFolder(res.GameFolder);
                     settings.UseTitleUpdate = !divas;
@@ -69,16 +73,16 @@ static class Program
             var paths = new LauncherPaths();
             var dlc = new DlcStore(paths.UserData);
             var tc = new TotalConversion(paths, dlc);
-            bool ok = tc.RestoreVanilla(out string msg);
+            var settings = LauncherSettings.Load(paths.SettingsFile);
+            string game = TotalConversion.FindVanillaGame(settings, paths) ?? "";
+            bool ok = tc.RestoreVanilla(settings, out string msg);
             Console.WriteLine(msg);
             if (ok)
             {
-                var settings = LauncherSettings.Load(paths.SettingsFile);
                 settings.UseTitleUpdate = false;
-                if (!string.IsNullOrEmpty(paths.DefaultGameFolder))
-                    settings.GameFolder = paths.DefaultGameFolder;
-                settings.Save(paths.SettingsFile);
+                settings.GameFolder = game;
             }
+            settings.Save(paths.SettingsFile);
             return ok ? 0 : 1;
         }
         if (args.Length == 1 && args[0] == "--test-staging")

@@ -1274,19 +1274,18 @@ body::before {
 
 .toast {
     position: fixed;
-    bottom: 92px;
-    left: 50%;
     z-index: 1100;
-    max-width: calc(100% - 64px);
+    box-sizing: border-box;
+    width: fit-content;
+    margin: 0 auto;
     padding: 10px 16px;
     border: 1px solid rgb(255 0 66 / 50%);
-    border-radius: 999px;
+    border-radius: 22px;
     background: rgb(10 15 23 / 96%);
     box-shadow: 0 12px 30px rgb(0 0 0 / 45%);
     color: #ff0042;
     font-size: 13px;
     font-weight: 600;
-    transform: translateX(-50%);
     animation: popup-fade-in 140ms ease-out both;
 }
 
@@ -1473,6 +1472,11 @@ body::before {
 
 .tc-actions .action-pill svg {
     flex-shrink: 0;
+}
+
+.tc-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* Game version: Vanilla / Updated, full-length across the panel */

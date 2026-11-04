@@ -1,5 +1,6 @@
 using System.Buffers.Binary;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Wwe2k14Launcher;
 
@@ -8,6 +9,8 @@ namespace Wwe2k14Launcher;
 // STFS DLC packages (content type 00000002), and STFS Save packages (content type 00000001).
 public sealed class TotalConversion
 {
+    const string WrestlingLegends = "Wrestling Legends";
+
     readonly LauncherPaths _paths;
     readonly DlcStore _dlc;
 
@@ -22,7 +25,8 @@ public sealed class TotalConversion
         string Message,
         string? GameFolder = null,
         int DlcInstalled = 0,
-        int SavesInstalled = 0
+        int SavesInstalled = 0,
+        List<string>? DlcAdded = null
     );
 
     public Result Install(string sourceFolder, Action<string, int, int>? onProgress = null)
@@ -37,6 +41,7 @@ public sealed class TotalConversion
 
         // 2. Discover DLC packages
         var dlcFiles = FindDlcPackages(sourceFolder);
+        if (gameFolder != null && dlcFiles.Count == 0) dlcFiles = FindDlcNextTo(sourceFolder);
 
         // 3. Discover Save packages
         var saveFiles = FindSavePackages(sourceFolder);
@@ -48,10 +53,12 @@ public sealed class TotalConversion
 
         int dlcInstalled = 0;
         int savesInstalled = 0;
+        var dlcBefore = _dlc.List().Select(d => d.Name).ToHashSet(StringComparer.OrdinalIgnoreCase);
 
         // 4. Install DLC packages
         int totalItems = dlcFiles.Count + saveFiles.Count;
         int currentItem = 0;
+        string? dlcError = null;
 
         for (int i = 0; i < dlcFiles.Count; i++)
         {
@@ -60,6 +67,7 @@ public sealed class TotalConversion
             onProgress?.Invoke($"Installing DLC ({i + 1}/{dlcFiles.Count}): {fileName}", currentItem++, totalItems);
             var res = _dlc.Install(dlcPath);
             if (res.Ok) dlcInstalled++;
+            else dlcError = $"{fileName}: {res.Message}";
         }
 
         // 5. Install Save packages (00000001)
@@ -135,17 +143,87 @@ public sealed class TotalConversion
             summary.Append($" Installed {dlcInstalled} DLCs.");
         if (savesInstalled > 0)
             summary.Append($" Extracted {savesInstalled} save packages.");
+        if (dlcError != null)
+            summary.Append($" {dlcFiles.Count - dlcInstalled} DLC packages failed ({dlcError}).");
+        else if (dlcFiles.Count == 0 && gameFolder != null)
+            summary.Append(" No DLC found: add the mod's DLC in the DLC tab.");
 
-        return new(true, summary.ToString(), gameFolder, dlcInstalled, savesInstalled);
+        var dlcAdded = _dlc.List().Select(d => d.Name).Where(name => !dlcBefore.Contains(name)).ToList();
+        return new(true, summary.ToString(), gameFolder, dlcInstalled, savesInstalled, dlcAdded);
     }
 
-    public bool RestoreVanilla(out string message)
+    // The name to show for the selected game folder, or null when it isn't a total conversion.
+    public static string? ActiveName(LauncherSettings settings) => ActiveName(settings, settings.GameFolder);
+
+    static string? ActiveName(LauncherSettings settings, string folder)
+    {
+        if (folder.Length == 0) return null;
+        if (!folder.EndsWith(".iso", StringComparison.OrdinalIgnoreCase) && DivasEvolution.IsGameFolder(folder)) return DivasEvolution.Name;
+        if (settings.TotalConversionName.Length > 0 && folder.Equals(settings.TotalConversionFolder, StringComparison.OrdinalIgnoreCase))
+            return settings.TotalConversionName;
+        // Installed before the launcher remembered the name.
+        return folder.Contains(WrestlingLegends, StringComparison.OrdinalIgnoreCase) ? WrestlingLegends : null;
+    }
+
+    // A mod's name from the folder it was installed from: "Wrestling Legends 1.1" -> "Wrestling Legends".
+    public static string NameFromFolder(string sourceFolder, string gameFolder)
+    {
+        string name = Path.GetFileName(sourceFolder.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
+        foreach (string known in new[] { WrestlingLegends, DivasEvolution.Name })
+        {
+            if (name.Contains(known, StringComparison.OrdinalIgnoreCase) || gameFolder.Contains(known, StringComparison.OrdinalIgnoreCase))
+                return known;
+        }
+        return Regex.Replace(name, @"[\s_-]*\(?v?\d+(\.\d+)*\)?$", "", RegexOptions.IgnoreCase).Trim();
+    }
+
+    // The game to go back to: the first remembered game that still exists and isn't itself a total conversion.
+    public static string? FindVanillaGame(LauncherSettings settings, LauncherPaths paths)
+    {
+        string legacyFile = Path.Combine(paths.UserData, "backups", "vanilla_save", "game_folder.txt");
+        string legacy = "";
+        try { if (File.Exists(legacyFile)) legacy = File.ReadAllText(legacyFile).Trim(); }
+        catch (IOException) { }
+        string commonDisc = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads", "xiso", "WWE 2K14 (USA, Europe)");
+        return new[] { settings.VanillaGameFolder, settings.PreviousGameFolder, legacy, paths.DefaultGameFolder, commonDisc }
+            .FirstOrDefault(game => game.Length > 0 && (File.Exists(game) || Directory.Exists(game)) && ActiveName(settings, game) is null);
+    }
+
+    // Undoes what Install did: the saves it replaced and the DLC it added. Saves the mod didn't replace stay.
+    public bool RestoreVanilla(LauncherSettings settings, out string message)
     {
         string backupDir = Path.Combine(_paths.UserData, "backups", "vanilla_save");
         string saveRoot = Path.Combine(_paths.UserData, "B13EBABEBABEBABE", "545408B2", "00000001");
 
+        int dlcRemoved = 0;
+        try
+        {
+            foreach (var item in _dlc.List())
+            {
+                // Mods installed before the launcher tracked their DLC: Divas Evolution's own package is recognisable.
+                if (settings.TotalConversionDlc.Contains(item.Name, StringComparer.OrdinalIgnoreCase) ||
+                    item.Name.Contains(DivasEvolution.Name, StringComparison.OrdinalIgnoreCase) ||
+                    item.DisplayName.Contains(DivasEvolution.Name, StringComparison.OrdinalIgnoreCase))
+                {
+                    _dlc.Remove(item.Name);
+                    dlcRemoved++;
+                }
+            }
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException)
+        {
+            message = $"Could not remove the mod's DLC: {ex.Message}";
+            return false;
+        }
+        settings.TotalConversionDlc.Clear();
+        settings.TotalConversionName = "";
+        settings.TotalConversionFolder = "";
+
         int restored = 0;
-        if (Directory.Exists(backupDir))
+        // Only an actual save backup may replace the saves (older launchers also kept just game_folder.txt here).
+        bool hasSaveBackup = Directory.Exists(backupDir) &&
+            Directory.EnumerateFileSystemEntries(backupDir).Any(entry => !Path.GetFileName(entry).Equals("game_folder.txt", StringComparison.OrdinalIgnoreCase));
+        if (hasSaveBackup)
         {
             try
             {
@@ -175,10 +253,14 @@ public sealed class TotalConversion
                 return false;
             }
         }
+        // Used up: the next total conversion backs up the saves as they are then.
+        try { if (Directory.Exists(backupDir)) Directory.Delete(backupDir, true); }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
 
         message = restored > 0
             ? $"Restored {restored} vanilla save items and switched to Vanilla version."
             : "Switched back to Vanilla version.";
+        if (dlcRemoved > 0) message += $" Removed {dlcRemoved} DLC packages of the mod.";
         return true;
     }
 
@@ -259,6 +341,27 @@ public sealed class TotalConversion
         }
 
         return result;
+    }
+
+    // Mods can ship their DLC as a separate download that ends up beside the mod's folder (Divas Evolution's
+    // "Downloadable Content"). Looks up to two levels above the selected folder, as it may be the inner game folder.
+    static List<string> FindDlcNextTo(string sourceFolder)
+    {
+        var dir = new DirectoryInfo(sourceFolder).Parent;
+        for (int level = 0; level < 2 && dir != null; level++, dir = dir.Parent)
+        {
+            try
+            {
+                var folders = dir.GetDirectories();
+                var matches = folders.Where(f => f.Name.Contains("Downloadable Content", StringComparison.OrdinalIgnoreCase)).ToList();
+                if (matches.Count == 0)
+                    matches = folders.Where(f => f.Name.Split(' ', '_', '-', '.').Contains("DLC", StringComparer.OrdinalIgnoreCase)).ToList();
+                var packages = matches.SelectMany(f => FindDlcPackages(f.FullName)).ToList();
+                if (packages.Count > 0) return packages;
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
+        }
+        return [];
     }
 
     static List<string> FindSavePackages(string root)
