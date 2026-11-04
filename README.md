@@ -2,7 +2,7 @@
   <img src="res/wwe2k14.png" alt="WWE 2K14 PC" width="128">
 </p>
 
-<h1 align="center">WWE 2K14 PC Recomp (By Banshee) v1.2.0</h1>
+<h1 align="center">WWE 2K14 PC Recomp (By Banshee) v1.2.1</h1>
 
 <p align="center">
   <b>WWE 2K14 recompilation for PC.</b>
@@ -19,6 +19,14 @@
 If you want to support me, here's my [Patreon](https://www.patreon.com/c/Banshee734).
 
 To keep up with updates, follow me on [Twitter](https://x.com/itsbybanshee).
+
+## What's new in v1.2.1
+
+- 🎬 **Entrance preview:** Exit in Create-An-Entrance now returns to the menu every time, with 60 FPS entrances kept
+- ▶️ **Play button:** the launcher goes back to Play when the game closes
+- 📦 **Total conversions:** the button shows the mod's name, mod DLC installs with it, and Restore Vanilla works properly
+- 🗑️ **Remove all:** clear all your DLC with one click
+- 💃 **Divas Evolution:** supports the creator's updated XEX
 
 ## What's new in v1.2.0
 
