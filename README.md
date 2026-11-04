@@ -26,7 +26,7 @@ To keep up with updates, follow me on [Twitter](https://x.com/itsbybanshee).
 - 📦 **Total conversions:** the button shows the mod's name and mod DLC installs with it
 - 🤼 **Movesets:** fixed issue freezing the game when previewing finishers or signatures
 - 🗑️ **Remove all:** clear all your DLC with one click
-- 💃 **Divas Evolution:** supports the creator's updated XEX [Twitter](https://x.com/yaboibouncy).
+- 💃 **Divas Evolution:** supports the creator's updated XEX [Twitter](https://x.com/yaboibouncy)
 
 ## What's new in v1.2.0
 
