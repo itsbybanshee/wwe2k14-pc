@@ -22,11 +22,11 @@ To keep up with updates, follow me on [Twitter](https://x.com/itsbybanshee).
 
 ## What's new in v1.2.1
 
-- 🎬 **Entrance preview:** Exit in Create-An-Entrance now returns to the menu every time, with 60 FPS entrances kept
-- ▶️ **Play button:** the launcher goes back to Play when the game closes
-- 📦 **Total conversions:** the button shows the mod's name, mod DLC installs with it, and Restore Vanilla works properly
+- 🎬 **Entrance preview:** fixed issue where player would get stuck in create-an-entrance when previewing current entrance
+- 📦 **Total conversions:** the button shows the mod's name and mod DLC installs with it
+- 🤼 **Movesets:** fixed issue freezing the game when previewing finishers or signatures
 - 🗑️ **Remove all:** clear all your DLC with one click
-- 💃 **Divas Evolution:** supports the creator's updated XEX
+- 💃 **Divas Evolution:** supports the creator's updated XEX [Twitter](https://x.com/yaboibouncy).
 
 ## What's new in v1.2.0
 
