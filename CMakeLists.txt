@@ -12,6 +12,7 @@ include(generated/rexglue.cmake)
 set(WWE2K14_SOURCES
     src/main.cpp
     src/frame_rate.cpp
+    src/cae_preview.cpp
     src/resolve_coherency.cpp
     src/launcher_settings.cpp
     src/cp_profiler.cpp

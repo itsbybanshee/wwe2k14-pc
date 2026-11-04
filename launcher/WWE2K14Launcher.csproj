@@ -10,7 +10,7 @@
     <RootNamespace>Wwe2k14Launcher</RootNamespace>
     <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
     <!-- Launcher updates compare this with the latest GitHub release tag (AppUpdater.cs): keep it equal to the tag. -->
-    <Version>1.2.0</Version>
+    <Version>1.2.1</Version>
     <ApplicationIcon>..\res\wwe2k14.ico</ApplicationIcon>
   </PropertyGroup>
 
