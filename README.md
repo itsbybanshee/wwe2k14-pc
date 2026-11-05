@@ -94,6 +94,19 @@ Windows 11 and most Windows 10 PCs).
 Saves, settings, logos, music and DLC are kept in `userdata` next to the launcher, mods in `mods`, logs in `logs`.
 To update, unzip the new version over the old one: `userdata` and `mods` are kept.
 
+### Total conversion mods
+
+Mods like Wrestling Legends and Divas Evolution install with one click:
+
+1. Extract the mod to a folder of its own. If it comes with a `Downloadable Content` folder, keep it next to the
+   mod's game folder.
+2. In the launcher, under **Game files**, click **Total Conversion**.
+3. Select the mod's folder and wait for the install to finish. The launcher sets up the game, the mod's DLC and any
+   saves it includes, and the button changes to the mod's name.
+4. Press **Play**.
+
+To go back to the original game, click **Restore Vanilla**.
+
 ## Controls
 
 An Xbox controller (or any controller Windows sees as one) works like on the Xbox 360. Keyboard works too; the full
