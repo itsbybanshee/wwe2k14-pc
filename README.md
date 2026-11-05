@@ -15,7 +15,7 @@
 
 - It is recommended to apply a title update and install DLC's for an optimal experience.
 
--  Would appreciate it greatly it you could ★ this repo!
+-  Would appreciate it greatly if you could ★ this repo!
 
 ## Socials
 
@@ -34,7 +34,6 @@ To keep up with updates, follow me on [Twitter](https://x.com/itsbybanshee).
 
 - 🎬 **Entrance preview:** fixed game being stuck in create-an-entrance when previewing entrances
 - 📦 **Total conversions:** the button shows the mod's name and mod DLC installs with it
-- 🤼 **Movesets:** fixed issue freezing the game when previewing finishers or signatures
 - 🗑️ **Remove all:** clear all your DLC with one click
 - 💃 **Divas Evolution:** supports the creator's updated XEX [Twitter](https://x.com/yaboibouncy)
 
