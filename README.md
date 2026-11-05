@@ -34,7 +34,7 @@ To keep up with updates, follow me on [Twitter](https://x.com/itsbybanshee).
 - 📦 **Total conversions:** the button shows the mod's name and mod DLC installs with it
 - 🤼 **Movesets:** fixed issue freezing the game when previewing finishers or signatures
 - 🗑️ **Remove all:** clear all your DLC with one click
-- 💃 **Divas Evolution:** supports the creator's updated XEX [Twitter](https://x.com/yaboibouncy).
+- 💃 **Divas Evolution:** supports the creator's updated XEX [Twitter](https://x.com/yaboibouncy)
 
 </details>
 
@@ -44,7 +44,7 @@ To keep up with updates, follow me on [Twitter](https://x.com/itsbybanshee).
 - 💃 **Divas Evolution**: one-click total conversion install of the Divas Evolution mod
 - 🔄 **Launcher updates**: the launcher flags new releases and downloads and installs them for you
 - 🏷️ **Build number**: the launcher shows its version next to the PC tag
-- 🎨 **New look**: new icon and red accent color across the launcher.
+- 🎨 **New look**: new icon and red accent color across the launcher
 
 </details>
 
@@ -55,7 +55,7 @@ To keep up with updates, follow me on [Twitter](https://x.com/itsbybanshee).
 - 🎮 **Button mapper**: remap controller and keyboard binds. **Export / import** your control schemes to share them
 - ⌨️ **Modern keyboard layout**: default keys in the style of current WWE 2K games on PC
 - 🕹️ **Controls window**: an Xbox 360 controller diagram with real button icons, plus keyboard and custom pages
-- ✨ **Launcher polish**: fits any screen size, cleaner and more consistent look.
+- ✨ **Launcher polish**: fits any screen size, cleaner and more consistent look
 
 </details>
 
