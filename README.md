@@ -23,7 +23,7 @@ To keep up with updates, follow me on [Twitter](https://x.com/itsbybanshee).
 
 ## What's new in v1.2.2
 
-- 🎥 **Replay saving:** fixed game ignoring all input after saving a replay clip
+- 🎥 **Replay saving:** fixed game freezing after saving a replay clip
 
 ## What's new in v1.2.1
 
