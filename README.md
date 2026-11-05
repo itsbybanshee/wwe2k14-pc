@@ -15,6 +15,8 @@
 
 - It is recommended to apply a title update and install DLC's for an optimal experience.
 
+-  Would appreciate it greatly it you could ★ this repo!
+
 ## Socials
 
 If you want to support me, here's my [Patreon](https://www.patreon.com/c/Banshee734).
@@ -71,10 +73,8 @@ To keep up with updates, follow me on [Twitter](https://x.com/itsbybanshee).
 - **Mouse support**: point-and-click menus, wrestler select, clickable button prompts
 - **Runs straight from your `.iso`**, or from an extracted game folder
 - **Mods** (wrestlers, arenas, menus, videos, sounds) with an on/off switch each
-- **Total conversion** one-click install for projects like "Wrestling Legends" 
-  and "Divas Evolution" (which changes the game code, so it plays with its own `wwe2k14_divas.exe`, built from the
-  mod with `tools\build-divas.ps1`)
-- **DLC support**
+- **Total conversion** one-click install for projects like "Wrestling Legends" & "Divas Evolution"
+- **DLC support** for official and community DLC packages
 - **Achievements** with unlock notifications and progress tracker
 - **Custom music** in the game's soundtrack or entrances (MP3, WAV, FLAC, OGG)
 - **Custom logos**, including import from a PS3 save, with a **logo library** to keep more than 20 and choose imports
@@ -98,19 +98,17 @@ To update, unzip the new version over the old one: `userdata` and `mods` are kep
 
 Mods like Wrestling Legends and Divas Evolution install with one click:
 
-1. Extract the mod to a folder of its own. If it comes with a `Downloadable Content` folder, keep it next to the
-   mod's game folder.
+1. Extract the mod to a folder of its own.
 2. In the launcher, under **Game files**, click **Total Conversion**.
-3. Select the mod's folder and wait for the install to finish. The launcher sets up the game, the mod's DLC and any
-   saves it includes, and the button changes to the mod's name.
+3. Select the mod's folder. The launcher installs the mods's DLC and the button changes to the mod's name.
 4. Press **Play**.
 
 To go back to the original game, click **Restore Vanilla**.
 
 ## Controls
 
-An Xbox controller (or any controller Windows sees as one) works like on the Xbox 360. Keyboard works too; the full
-layout is under **Controls** in the launcher, and **Controls > Custom** lets you remap any button or key.
+An Xbox controller (or any controller Windows sees as one) works like on the Xbox 360. 
+Keyboard works too; the full layout is under **Controls** in the launcher, and **Controls > Custom** lets you remap any button or key.
 
 Mouse in menus: point to select, click to choose, wheel to scroll, click on-screen button prompts (like **B Back**),
 middle click = Start.
