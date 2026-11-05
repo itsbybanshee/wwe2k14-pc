@@ -2,7 +2,7 @@
   <img src="res/wwe2k14.png" alt="WWE 2K14 PC" width="128">
 </p>
 
-<h1 align="center">WWE 2K14 PC Recomp (By Banshee) v1.2.1</h1>
+<h1 align="center">WWE 2K14 PC Recomp (By Banshee) v1.2.2</h1>
 
 <p align="center">
   <b>WWE 2K14 recompilation for PC.</b>
@@ -20,6 +20,10 @@
 If you want to support me, here's my [Patreon](https://www.patreon.com/c/Banshee734).
 
 To keep up with updates, follow me on [Twitter](https://x.com/itsbybanshee).
+
+## What's new in v1.2.2
+
+- 🎥 **Replay saving:** fixed game ignoring all input after saving a replay clip
 
 ## What's new in v1.2.1
 
