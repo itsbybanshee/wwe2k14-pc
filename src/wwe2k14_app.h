@@ -10,12 +10,17 @@
 
 #include <rex/cvar.h>
 #include <rex/filesystem.h>
+#include <imgui.h>
+
 #include <rex/graphics/vulkan/graphics_system.h>
+#include <rex/input/input_system.h>
 #include <rex/logging.h>
 #include <rex/runtime.h>
 #include <rex/rex_app.h>
 #include <rex/system/xam/achievements.h>
 #include <rex/ui/keybinds.h>
+
+REXCVAR_DECLARE(bool, debug_ui);
 
 #include "achievement_sound.h"
 #include "achievement_toast.h"
@@ -202,6 +207,11 @@ class Wwe2k14App : public rex::ReXApp {
   void OnPostLaunchModule(rex::system::XThread* thread) override {
     (void)thread;
     rex::system::xam::WriteAchievementSummary();
+    // The SDK blanks all game input (controller and keyboard) while the overlay wants the mouse. That check is for the
+    // debug overlays; in normal play it could leave the game without input, as after saving a replay clip.
+    if (auto* input = static_cast<rex::input::InputSystem*>(runtime()->input_system())) {
+      input->SetActiveCallback([] { return !REXCVAR_GET(debug_ui) || !ImGui::GetIO().WantCaptureMouse; });
+    }
   }
 
   void OnShutdown() override {
